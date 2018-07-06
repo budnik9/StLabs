@@ -1,1 +1,1 @@
-console.log("setup webpack");
+alert("ESLint and Webpack");
