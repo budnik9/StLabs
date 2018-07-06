@@ -1,1 +1,1 @@
-console.log("init project");
+console.log("setup webpack");
