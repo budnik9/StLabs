@@ -1,7 +1,8 @@
 @import "./__item/menu__item.less";
+@import "../../global-var-and-func";
 
 .menu {
-    display: block;
+    .setup-flex-container(@justify-content: space-around);
     height: @menu-item-height + 20px;
     background-color: @menu-item-bg-color;
 }

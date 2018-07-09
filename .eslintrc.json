@@ -9,6 +9,10 @@
         "ecmaVersion": 2018,
         "sourceType": "module"
     },
+    "globals": {
+        "process": true,
+        "__dirname": true
+    },
     "rules": {
         "indent": [
             "error",

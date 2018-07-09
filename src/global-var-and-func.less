@@ -1,0 +1,15 @@
+.setup-flex-container(@flex-direction: row, @flex-wrap: nowrap, @justify-content: flex-start,
+                        @align-items: stretch, @align-content: stretch) {
+    display: flex;
+    flex-direction: @flex-direction;
+    flex-wrap: @flex-wrap;
+    justify-content: @justify-content;
+    align-items: @align-items;
+    align-content: @align-content;
+}
+
+.setup-flex-items(@order: 0, @flex-grow: 0, @flex-shrink: 1, @flex-basis: auto, @align-self: auto) {
+    order: @order;
+    flex: @flex-grow @flex-shrink @flex-basis;
+    align-self: @align-self;
+}

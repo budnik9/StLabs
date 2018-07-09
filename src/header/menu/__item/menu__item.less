@@ -1,21 +1,18 @@
+@import "../../../global-var-and-func";
+
 @menu-item-height: 50px;
 @menu-item-bg-color: #D3D3D3;
 
 .menu__item {
-    display: inline-block;
-    padding: 20px 40px 0px 40px;
+    padding-top: 20px;
+    .setup-flex-items(@align-self: center);
     height: @menu-item-height;
     background-color: @menu-item-bg-color;
     color: darken(@menu-item-bg-color, 45%);
     font-size: 24px;
-    vertical-align: middle;
     text-align: center;
 
         &:hover {
            color: darken(@menu-item-bg-color, 70%); 
-        }
-
-        &:first-child {
-            margin-left: 60px;
         }
 }
