@@ -1,3 +1,17 @@
+@light-sky-blue: #87CEFA;
+@light-cyan: #E0FFFF;
+
+.font(@fontName; @urlName: @fontName; @weight: normal; @style: normal) {
+    font-family: '@{fontName}';
+    src: url('/fonts/@{urlName}/@{urlName}.eot');
+    src: url('/fonts/@{urlName}/@{urlName}.eot#iefix') format('embedded-opentype'),
+    url('/fonts/@{urlName}/@{urlName}.woff') format('woff'),
+    url('/fonts/@{urlName}/@{urlName}.ttf') format('truetype'),
+    url('/fonts/@{urlName}/@{urlName}.svg') format('svg');
+    font-weight: @weight;
+    font-style: @style;
+}
+
 .setup-flex-container(@flex-direction: row, @flex-wrap: nowrap, @justify-content: flex-start,
                         @align-items: stretch, @align-content: stretch) {
     display: flex;
@@ -12,4 +26,17 @@
     order: @order;
     flex: @flex-grow @flex-shrink @flex-basis;
     align-self: @align-self;
+}
+
+.weather-info-elements-style(@font: 'Crimson Text', @font-family: serif) {
+    display: block;
+    padding: 20px 15px;
+    border-bottom: 3px solid @light-sky-blue;
+    .font(@font);
+    font-size: 24px;
+    text-align: center;
+
+        &:nth-child(2n + 1) {
+            background-color: lighten(@light-cyan, 4%);
+        }
 }

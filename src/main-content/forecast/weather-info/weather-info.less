@@ -1,5 +1,52 @@
 @import "../../../global-var-and-func";
 
-.weather.info {
+.weather-info {
     .setup-flex-items(@flex-grow: 1, @align-self: stretch);
+}
+
+.weather-info__city {
+    display: block;
+    padding: 20px 15px;
+    font-size: 28px;
+    font-weight: bold;
+    text-align: center;
+}
+
+.weather-info__temperature {
+    display: block;
+    padding: 20px 15px;
+    font-size: 40px;
+    font-weight: bold;
+    text-align: right;
+}
+
+.weather-info__description {
+    display: block;
+    padding: 10px 5px;
+    font-size: 20px;
+    text-align: left;
+}
+
+.weather-info__wind {
+    .weather-info-elements-style;
+}
+
+.weather-info__pressure {
+    .weather-info-elements-style;
+}
+
+.weather-info__humidity {
+    .weather-info-elements-style;
+}
+
+.weather-info__sunrise {
+    .weather-info-elements-style;
+}
+
+.weather-info__sunset {
+    .weather-info-elements-style;
+}
+
+.weather-info__coordinates {
+    .weather-info-elements-style;
 }

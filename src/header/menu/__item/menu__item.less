@@ -8,11 +8,16 @@
     .setup-flex-items(@align-self: center);
     height: @menu-item-height;
     background-color: @menu-item-bg-color;
-    color: darken(@menu-item-bg-color, 45%);
+    color: darken(@menu-item-bg-color, 40%);
     font-size: 24px;
+    font-weight: bold;
     text-align: center;
 
         &:hover {
            color: darken(@menu-item-bg-color, 70%); 
         }
+}
+
+.menu__item_active {
+    color: darken(@menu-item-bg-color, 80%);
 }
