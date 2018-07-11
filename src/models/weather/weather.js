@@ -7,6 +7,7 @@ class Weather {
             lat: data.coord.lat,
             lon: data.coord.lon
         };
+        this.iconCode = data.weather[0].icon;
         this.temperature = data.main.temp;
         this.weatherDescription = data.weather[0].description;
         this.weatherDescription = this.weatherDescription.charAt(0).toUpperCase() + this.weatherDescription.slice(1);
@@ -26,6 +27,11 @@ class Weather {
         city.className = "weather-info__city"; 
         city.textContent = `${this.city}, ${this.country}`; 
         weatherInfo.appendChild(city); 
+
+        let icon = document.createElement("img");
+        icon.setAttribute("src", `http://openweathermap.org/img/w/${this.iconCode}.png`);
+        icon.className = "weather-info__icon";
+        weatherInfo.appendChild(icon);
     
         let temperature = document.createElement("span"); 
         temperature.className = "weather-info__temperature"; 
