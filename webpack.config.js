@@ -4,19 +4,19 @@ const MiniCssExtractPlugin = require("mini-css-extract-plugin");
 
 const extractLess = new MiniCssExtractPlugin({
     filename: "[name].[hash].css",
-    disable: NODE_ENV === "development"
+    disable: NODE_ENV === "development",
 });
 
 module.exports = {
     mode: NODE_ENV,
     entry: "./src/app.js",
     output: {
-        path: __dirname + "/dist",
-        filename: "bundle.js"
+        path: `${__dirname}/dist`,
+        filename: "bundle.js",
     },
 
-    devtool: NODE_ENV == "development" ? "cheap-inline-module-source-map" : "source-map",
-	
+    devtool: NODE_ENV === "development" ? "cheap-inline-module-source-map" : "source-map",
+
     plugins: [extractLess],
 
     module: {
@@ -30,13 +30,13 @@ module.exports = {
                         presets: [
                             ["env", {
                                 targets: {
-                                    browsers: "> 5%"     // adaptation for browsers with a share of more than 5%
-                                }
+                                    browsers: "> 5%", // adaptation for browsers with a share of more than 5%
+                                },
                             }],
-                            ["stage-0"]
-                        ]
-                    }
-                }
+                            ["stage-0"],
+                        ],
+                    },
+                },
             },
             // {
             //     test: /\.css$/,
@@ -49,7 +49,7 @@ module.exports = {
                     "css-loader",
                     "postcss-loader",
                     "less-loader",
-                ]
+                ],
             },
             {
                 test: /\.(png|jpg|gif)$/,
@@ -58,10 +58,10 @@ module.exports = {
                         loader: "file-loader",
                         options: {
                             name: "[path][name].[ext]",
-                            outputPath: "images/"
-                        }
-                    }
-                ]
+                            outputPath: "images/",
+                        },
+                    },
+                ],
             },
             {
                 test: /\.(png|jpg|gif)$/,
@@ -69,33 +69,33 @@ module.exports = {
                     {
                         loader: "url-loader",
                         options: {
-                            limit: 8192
-                        }
-                    }
-                ]
-            }
-        ]
+                            limit: 8192,
+                        },
+                    },
+                ],
+            },
+        ],
     },
 
-    resolve: {                                       // rules for loading modules
+    resolve: { // rules for loading modules
         modules: ["node_modules"],
-        extensions: [".js"]
+        extensions: [".js"],
     },
 
-    resolveLoader: {                                // rules for loading loaders
+    resolveLoader: { // rules for loading loaders
         modules: ["node_modules"],
-        extensions: [".js"]
-    }
+        extensions: [".js"],
+    },
 };
 
 
-if(NODE_ENV == "production") {
+if (NODE_ENV === "production") {
     module.exports.plugins.push(
         new webpack.optimize.UglifyJsPlugin({
             compress: {
                 warnings: false,
-                drop_console: true
-            }
-        })
+                drop_console: true,
+            },
+        }),
     );
 }
