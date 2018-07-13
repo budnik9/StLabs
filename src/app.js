@@ -1,15 +1,16 @@
 import "./index.less";
 
-import axiosAPI from "./services/axiosAPI/axiosAPI";
-import Weather from "./models/weather/weather";
-import ForecastChart from "./models/forecastChart/forecastChart";
+import openWeatherMapAPI from "./services/openWeatherMapAPI/openWeatherMapAPI";
+import Weather from "./components/weather/weather";
+import ForecastChart from "./components/forecastChart/forecastChart";
+import unitsFormat from "./constants/unitsFormat";
 
 async function getLocation(pos) {
     const { coords } = pos;
 
     try {
-        const weatherResponse = await axiosAPI.getWeatherByGeographicCoordinates(coords.latitude, coords.longitude, "metric");
-        const forecastResponse = await axiosAPI.getForecastByGeographicCoordinates(coords.latitude, coords.longitude, "metric");
+        const weatherResponse = await openWeatherMapAPI.getWeatherByGeographicCoordinates(coords.latitude, coords.longitude, unitsFormat.METRIC);
+        const forecastResponse = await openWeatherMapAPI.getForecastByGeographicCoordinates(coords.latitude, coords.longitude, unitsFormat.METRIC);
 
         const forecastBlock = document.createElement("section");
         forecastBlock.className = "forecast main-content__forecast";

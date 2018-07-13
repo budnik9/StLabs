@@ -1,7 +1,7 @@
 import Highcharts from "highcharts";
 import Exporting from "highcharts/modules/exporting";
 import config from "../../config/config";
-import dateOptions from "../../constants/dateOptions";
+import * as ChartOptions from "../../constants/chartOptions";
 
 Exporting(Highcharts);
 const configServer = config.server;
@@ -48,6 +48,7 @@ class ForecastChart {
     }
 
     getTimeForForecastValues() {
+
         return this.forecast.map((item) => {
             const year = parseInt(item.dt_txt.slice(0, 4), 10);
             const month = parseInt(item.dt_txt.slice(5, 7), 10) - 1;
@@ -58,7 +59,7 @@ class ForecastChart {
 
             const date = new Date(year, month, day, hour, minutes, seconds);
 
-            return date.toLocaleString("en-US", dateOptions);
+            return date.toLocaleString("en-US", ChartOptions.DATE_OPTIONS);
         });
     }
 
@@ -69,6 +70,8 @@ class ForecastChart {
         Highcharts.chart(chart, {
             chart: {
                 zoomType: "xy",
+                width: 800,
+                height: 500,
             },
             title: {
                 text: `Current weather and forecasts in ${this.city}, ${this.country}`,
@@ -116,13 +119,13 @@ class ForecastChart {
                 title: {
                     text: "Pressure",
                     style: {
-                        color: Highcharts.getOptions().colors[1],
+                        color: "F00",
                     },
                 },
                 labels: {
                     format: "{value} hpa",
                     style: {
-                        color: Highcharts.getOptions().colors[1],
+                        color: "F00",
                     },
                 },
                 opposite: true,

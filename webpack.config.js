@@ -33,7 +33,6 @@ module.exports = {
                                     browsers: "> 5%", // adaptation for browsers with a share of more than 5%
                                 },
                             }],
-                            ["stage-0"],
                         ],
                     },
                 },
