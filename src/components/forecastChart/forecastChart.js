@@ -2,15 +2,28 @@ import Highcharts from "highcharts";
 import Exporting from "highcharts/modules/exporting";
 import config from "../../config/config";
 import * as ChartOptions from "../../constants/chartOptions";
+import UnitsFormat from "../../constants/unitsFormat";
 
 Exporting(Highcharts);
 const configServer = config.server;
 
 class ForecastChart {
-    constructor(data) {
+    constructor(data, unitsFormat = UnitsFormat.METRIC) {
         this.city = data.city.name;
         this.country = data.city.country;
         this.forecast = data.list.slice(0, 10);
+        this.unitsFormat = unitsFormat;
+    }
+
+    getUnitsFormat() {
+        switch (this.unitsFormat) {
+        case UnitsFormat.STANDARD:
+            return "K";
+        case UnitsFormat.METRIC:
+            return "C";
+        default:
+            return "F";
+        }
     }
 
     getTemperatureForecast() {
@@ -52,7 +65,7 @@ class ForecastChart {
         return this.forecast.map((item) => {
             const year = parseInt(item.dt_txt.slice(0, 4), 10);
             const month = parseInt(item.dt_txt.slice(5, 7), 10) - 1;
-            const day = parseInt(item.dt_txt.slice(9, 11), 10);
+            const day = parseInt(item.dt_txt.slice(8, 11), 10);
             const hour = parseInt(item.dt_txt.slice(-8, -6), 10);
             const minutes = parseInt(item.dt_txt.slice(-5, -3), 10);
             const seconds = parseInt(item.dt_txt.slice(-2), 10);
@@ -86,7 +99,7 @@ class ForecastChart {
             }],
             yAxis: [{ // Temperature yAxis
                 labels: {
-                    format: "{value}°C",
+                    format: `{value}°${this.getUnitsFormat()}`,
                     style: {
                         color: "#F00",
                     },

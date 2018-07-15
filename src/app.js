@@ -1,9 +1,21 @@
 import "./index.less";
-
 import openWeatherMapAPI from "./services/openWeatherMapAPI/openWeatherMapAPI";
 import Weather from "./components/weather/weather";
 import ForecastChart from "./components/forecastChart/forecastChart";
 import unitsFormat from "./constants/unitsFormat";
+import citiesSet from "./collections/cities";
+import events from "./events/events";
+
+events();
+
+const date = new Date();
+const dateOptions = Object.freeze({
+    year: "numeric",
+    month: "short",
+    day: "numeric",
+});
+
+document.querySelector(".grid-container__date").textContent = date.toLocaleString("en-US", dateOptions);
 
 async function getLocation(pos) {
     const { coords } = pos;
@@ -22,6 +34,8 @@ async function getLocation(pos) {
         forecastChart.render(forecastBlock);
 
         document.querySelector(".main-content").appendChild(forecastBlock);
+
+        citiesSet.add(weatherResponse.data.name);
     } catch (err) {
         console.log(`ERROR: ${err.message}`);
         alert("An error has occurred! We apologize");

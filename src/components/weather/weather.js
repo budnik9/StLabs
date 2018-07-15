@@ -1,9 +1,10 @@
 import config from "../../config/config";
+import UnitsFormat from "../../constants/unitsFormat";
 
 const serverConfig = config.server;
 
 class Weather {
-    constructor(data) {
+    constructor(data, unitsFormat = UnitsFormat.METRIC) {
         this.city = data.name;
         this.country = data.sys.country;
         this.cityID = data.id;
@@ -22,6 +23,18 @@ class Weather {
         this.humidity = data.main.humidity;
         this.sunrise = new Date(data.sys.sunrise * 1000);
         this.sunset = new Date(data.sys.sunset * 1000);
+        this.unitsFormat = unitsFormat;
+    }
+
+    getUnitsFormat() {
+        switch (this.unitsFormat) {
+        case UnitsFormat.STANDARD:
+            return "K";
+        case UnitsFormat.METRIC:
+            return "C";
+        default:
+            return "F";
+        }
     }
 
     render(parentElement = document.querySelector(".main-content")) {
@@ -30,7 +43,7 @@ class Weather {
         weatherInfo.className = "weather-info";
 
         const city = document.createElement("span");
-        
+
         city.className = "weather-info__city";
         city.textContent = `${this.city}, ${this.country}`;
         weatherInfo.appendChild(city);
@@ -44,7 +57,7 @@ class Weather {
         const temperature = document.createElement("span");
 
         temperature.className = "weather-info__temperature";
-        temperature.textContent = `${this.temperature} \u00B0C`;
+        temperature.textContent = `${this.temperature} \u00B0${this.getUnitsFormat()}`;
         weatherInfo.appendChild(temperature);
 
         const weatherDescription = document.createElement("span");
@@ -92,7 +105,7 @@ class Weather {
         weatherInfo.appendChild(sunset);
 
         const geoCoords = document.createElement("span");
-        
+
         geoCoords.className = "weather-info__coordinates";
         geoCoords.textContent = `Geo coordinates: [${this.cityCoords.lat}, ${this.cityCoords.lon}]`;
         weatherInfo.appendChild(geoCoords);
