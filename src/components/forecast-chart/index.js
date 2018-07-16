@@ -1,11 +1,10 @@
 import Highcharts from "highcharts";
 import Exporting from "highcharts/modules/exporting";
-import config from "../../config/config";
-import * as ChartOptions from "../../constants/chartOptions";
-import UnitsFormat from "../../constants/unitsFormat";
+import configServer from "../../config/config-server";
+import * as ChartOptions from "../../constants/chart-options";
+import UnitsFormat from "../../constants/units-format";
 
 Exporting(Highcharts);
-const configServer = config.server;
 
 class ForecastChart {
     constructor(data, unitsFormat = UnitsFormat.METRIC) {
@@ -20,9 +19,9 @@ class ForecastChart {
         case UnitsFormat.STANDARD:
             return "K";
         case UnitsFormat.METRIC:
-            return "C";
+            return "°C";
         default:
-            return "F";
+            return "°F";
         }
     }
 
@@ -44,7 +43,7 @@ class ForecastChart {
             temperatureAxisData.push({
                 y: temperatureForecast[i],
                 marker: {
-                    symbol: `url(${configServer.iconsUrl}${iconCodes[i]}.png)`,
+                    symbol: `url(${configServer.ICONS_URL}${iconCodes[i]}.png)`,
                 },
             });
         }
@@ -99,7 +98,7 @@ class ForecastChart {
             }],
             yAxis: [{ // Temperature yAxis
                 labels: {
-                    format: `{value}°${this.getUnitsFormat()}`,
+                    format: `{value} ${this.getUnitsFormat()}`,
                     style: {
                         color: "#F00",
                     },
@@ -184,7 +183,7 @@ class ForecastChart {
                 type: "spline",
                 data: this.getTemperatureAxisData(),
                 tooltip: {
-                    valueSuffix: " °C",
+                    valueSuffix: ` ${this.getUnitsFormat()}`,
                 },
                 color: "#F00",
             }],

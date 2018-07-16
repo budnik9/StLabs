@@ -1,17 +1,6 @@
 @light-sky-blue: #87CEFA;
 @light-cyan: #E0FFFF;
 
-// .font(@fontName; @urlName: @fontName; @weight: normal; @style: normal) {
-//     font-family: '@{fontName}';
-//     src: url('/fonts/@{urlName}/@{urlName}.eot');
-//     src: url('/fonts/@{urlName}/@{urlName}.eot#iefix') format('embedded-opentype'),
-//     url('/fonts/@{urlName}/@{urlName}.woff') format('woff'),
-//     url('/fonts/@{urlName}/@{urlName}.ttf') format('truetype'),
-//     url('/fonts/@{urlName}/@{urlName}.svg') format('svg');
-//     font-weight: @weight;
-//     font-style: @style;
-// }
-
 .setup-flex-container(@flex-direction: row, @flex-wrap: nowrap, @justify-content: flex-start,
                         @align-items: stretch, @align-content: stretch) {
     display: flex;
@@ -32,7 +21,6 @@
     display: block;
     padding: 15px 10px;
     border-bottom: 3px solid @light-sky-blue;
-    //.font(@font);
     font-family: 'Raleway', sans-serif;
     font-size: 18px;
     text-align: center;

@@ -1,7 +1,7 @@
 import citiesSet from "../collections/cities";
-import openWeatherMapAPI from "../services/openWeatherMapAPI/openWeatherMapAPI";
-import Weather from "../components/weather/weather";
-import ForecastChart from "../components/forecastChart/forecastChart";
+import openWeatherMapAPI from "../services/open-weather-map-api";
+import Weather from "../components/weather";
+import ForecastChart from "../components/forecast-chart";
 
 
 export default () => {
@@ -12,7 +12,7 @@ export default () => {
         const unitsFormat = event.target.value;
 
         mainContent.innerHTML = "";
-        
+
         citiesSet.forEach(async (city) => {
             const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(city, unitsFormat);
             const forecastResponse = await openWeatherMapAPI.getForecastByCityName(city, unitsFormat);
@@ -29,5 +29,4 @@ export default () => {
             document.querySelector(".main-content").appendChild(forecastBlock);
         });
     });
-
 };
