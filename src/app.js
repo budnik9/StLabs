@@ -3,21 +3,24 @@ import openWeatherMapAPI from "./services/open-weather-map-api";
 import Weather from "./components/weather";
 import ForecastChart from "./components/forecast-chart";
 import Forecast from "./components/forecast";
+import DateComponent from "./components/date";
+import UnitsFormatComponent from "./components/units-format";
+import SearchForm from "./components/search-form";
 import unitsFormat from "./constants/units-format";
 import citiesSet from "./collections/cities";
-import events from "./events/events";
 import geolocation from "./services/geolocation";
 
-events();
+setTimeout(() => {
+    const optionsContainer = document.createElement("div");
 
-const date = new Date();
-const dateOptions = Object.freeze({
-    year: "numeric",
-    month: "short",
-    day: "numeric",
-});
+    optionsContainer.className = "options-container";
 
-document.querySelector(".grid-container__date").textContent = date.toLocaleString("en-US", dateOptions);
+    DateComponent.render(optionsContainer);
+    SearchForm.render(optionsContainer);
+    UnitsFormatComponent.render(optionsContainer);
+
+    document.querySelector(".header").appendChild(optionsContainer);
+}, 20);
 
 geolocation(async (position) => {
     const { coords } = position;

@@ -1,7 +1,7 @@
 import Highcharts from "highcharts";
 import Exporting from "highcharts/modules/exporting";
 import configServer from "../../config/config-server";
-import * as ChartOptions from "../../constants/chart-options";
+import ChartOptions from "../../constants/chart-options";
 import UnitsFormat from "../../constants/units-format";
 
 Exporting(Highcharts);
