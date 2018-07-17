@@ -1,0 +1,9 @@
+{
+    "editor.formatOnSave": true,
+    "tabWidth": 4,
+    "useTabs": false,
+    "trailingComma": "all",
+    "bracketSpacing": true,
+    "jsxBracketSameLine": false,
+    "comma-dangle": true
+}

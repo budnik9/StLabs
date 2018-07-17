@@ -1,29 +1,66 @@
-function createDomElement(elementType, className, textContent) {
-    const element = document.createElement(elementType);
+import openWeatherMapAPI from "../../services/open-weather-map-api";
+import Weather from "../weather";
+import ForecastChart from "../forecast-chart";
+import Forecast from "../forecast";
+import UnitsFormat from "../units-format";
+import DOM from "../../services/dom";
+import CitiesStorage from "../../services/cities-storage";
 
-    if (className) element.className = className;
-    if (textContent) element.textContent = textContent;
+class SearchForm {
+    static async handleClick(event) {
+        event.preventDefault();
 
-    return element;
-}
+        const citiesStorage = new CitiesStorage();
 
-class SearchFrom {
-    static render(parentElement = document.querySelector(".options-container")) {
-        const form = createDomElement("form", "search-form");
+        if (citiesStorage.length >= 4) {
+            console.log(citiesStorage.length);
+            alert("You can't add more than 5 forecasts to page");
+        } else {
+            const city = document.querySelector(".search-form__input").value;
+            const unitsFormat = UnitsFormat.getCurrentUnitsFormat();
+            console.log(citiesStorage.length);
+            try {
+                const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(
+                    city,
+                    unitsFormat,
+                );
+                const forecastResponse = await openWeatherMapAPI.getForecastByCityName(
+                    city,
+                    unitsFormat,
+                );
 
-        const inputTxt = createDomElement("input", "search-form__input");
+                const currentWeather = new Weather(weatherResponse.data);
+                const forecastChart = new ForecastChart(forecastResponse.data);
+                const forecastBlock = new Forecast(
+                    currentWeather,
+                    forecastChart,
+                );
 
-        inputTxt.setAttribute("placeholder", "city");
-        form.appendChild(inputTxt);
+                forecastBlock.render();
 
-        const button = createDomElement("button", "search-form__button");
+                citiesStorage.addCity(city);
+            } catch (err) {
+                console.log(`ERROR: ${err.message}`);
+                alert("An error has occurred! We apologize");
+            }
+        }
+    }
 
-        button.textContent = "Add";
-        button.setAttribute("type", "button");
-        form.appendChild(button);
+    static template() {
+        return `<input class="search-form__input" placeholder="city">
+                <button class="search-form__button" type="button">Add</button>`;
+    }
 
+    static render(
+        parentElement = document.querySelector(".options-container"),
+    ) {
+        const form = DOM.createDomElement("form", "search-form");
+
+        form.innerHTML = SearchForm.template();
+        form.querySelector(".search-form__button").addEventListener("click", SearchForm.handleClick);
+        
         parentElement.appendChild(form);
     }
 }
 
-export default SearchFrom;
+export default SearchForm;

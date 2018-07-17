@@ -1,3 +1,5 @@
+import DOM from "../../services/dom";
+
 class Forecast {
     constructor(weatherComponent, forecastChartComponent) {
         this.weatherComponent = weatherComponent;
@@ -5,9 +7,10 @@ class Forecast {
     }
 
     render(parentElement = document.querySelector(".main-content")) {
-        const forecastBlock = document.createElement("section");
-
-        forecastBlock.className = "forecast main-content__forecast";
+        const forecastBlock = DOM.createDomElement(
+            "section",
+            "forecast main-content__forecast",
+        );
 
         this.weatherComponent.render(forecastBlock);
         this.forecastChartComponent.render(forecastBlock);

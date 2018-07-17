@@ -1,3 +1,5 @@
+import DOM from "../../services/dom";
+
 const dateOptions = Object.freeze({
     year: "numeric",
     month: "short",
@@ -6,10 +8,11 @@ const dateOptions = Object.freeze({
 
 class DateComponent {
     static render(parentElement = document.querySelector(".options-container")) {
-        const date = document.createElement("span");
-
-        date.className = "date";
-        date.textContent = new Date().toLocaleDateString("en-US", dateOptions);
+        const date = DOM.createDomElement(
+            "span",
+            "date",
+            new Date().toLocaleDateString("en-US", dateOptions),
+        );
 
         parentElement.appendChild(date);
     }

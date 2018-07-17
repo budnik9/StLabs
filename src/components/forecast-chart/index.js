@@ -3,6 +3,7 @@ import Exporting from "highcharts/modules/exporting";
 import configServer from "../../config/config-server";
 import ChartOptions from "../../constants/chart-options";
 import UnitsFormat from "../../constants/units-format";
+import DOM from "../../services/dom";
 
 Exporting(Highcharts);
 
@@ -52,15 +53,18 @@ class ForecastChart {
     }
 
     getPressureForecast() {
-        return this.forecast.map(item => Math.round(item.main.pressure * 10) / 10);
+        return this.forecast.map(
+            item => Math.round(item.main.pressure * 10) / 10,
+        );
     }
 
     getPrecipitationForecast() {
-        return this.forecast.map(item => (Math.round(item.rain["3h"] * 10) / 10) || 0);
+        return this.forecast.map(
+            item => (item.rain ? Math.round(item.rain["3h"] * 10) / 10 : 0),
+        );
     }
 
     getTimeForForecastValues() {
-
         return this.forecast.map((item) => {
             const year = parseInt(item.dt_txt.slice(0, 4), 10);
             const month = parseInt(item.dt_txt.slice(5, 7), 10) - 1;
@@ -76,8 +80,7 @@ class ForecastChart {
     }
 
     render(parentElement = document.querySelector(".main-content")) {
-        const chart = document.createElement("section");
-        chart.className = "chart";
+        const chart = DOM.createDomElement("section", "chart");
 
         Highcharts.chart(chart, {
             chart: {
@@ -86,62 +89,71 @@ class ForecastChart {
                 height: 500,
             },
             title: {
-                text: `Current weather and forecasts in ${this.city}, ${this.country}`,
+                text: `Current weather and forecasts in ${this.city}, ${
+                    this.country
+                }`,
                 style: {
                     fontWeight: "bold",
                     fontSize: "32px",
                 },
             },
-            xAxis: [{
-                categories: this.getTimeForForecastValues(),
-                crosshair: true,
-            }],
-            yAxis: [{ // Temperature yAxis
-                labels: {
-                    format: `{value} ${this.getUnitsFormat()}`,
-                    style: {
-                        color: "#F00",
+            xAxis: [
+                {
+                    categories: this.getTimeForForecastValues(),
+                    crosshair: true,
+                },
+            ],
+            yAxis: [
+                {
+                    // Temperature yAxis
+                    labels: {
+                        format: `{value} ${this.getUnitsFormat()}`,
+                        style: {
+                            color: "#F00",
+                        },
+                    },
+                    title: {
+                        text: "Temperature",
+                        style: {
+                            color: "#F00",
+                        },
+                    },
+                    opposite: true,
+                },
+                {
+                    // Precipitation yAxis
+                    gridLineWidth: 0,
+                    title: {
+                        text: "Precipitation",
+                        style: {
+                            color: "#6495ED",
+                        },
+                    },
+                    labels: {
+                        format: "{value} mm",
+                        style: {
+                            color: "#6495ED",
+                        },
                     },
                 },
-                title: {
-                    text: "Temperature",
-                    style: {
-                        color: "#F00",
+                {
+                    // Pressure yAxis
+                    gridLineWidth: 0,
+                    title: {
+                        text: "Pressure",
+                        style: {
+                            color: "F00",
+                        },
                     },
-                },
-                opposite: true,
-
-            }, { // Precipitation yAxis
-                gridLineWidth: 0,
-                title: {
-                    text: "Precipitation",
-                    style: {
-                        color: "#6495ED",
+                    labels: {
+                        format: "{value} hpa",
+                        style: {
+                            color: "F00",
+                        },
                     },
+                    opposite: true,
                 },
-                labels: {
-                    format: "{value} mm",
-                    style: {
-                        color: "#6495ED",
-                    },
-                },
-
-            }, { // Pressure yAxis
-                gridLineWidth: 0,
-                title: {
-                    text: "Pressure",
-                    style: {
-                        color: "F00",
-                    },
-                },
-                labels: {
-                    format: "{value} hpa",
-                    style: {
-                        color: "F00",
-                    },
-                },
-                opposite: true,
-            }],
+            ],
             tooltip: {
                 shared: true,
             },
@@ -152,41 +164,46 @@ class ForecastChart {
                 verticalAlign: "top",
                 y: 55,
                 floating: true,
-                backgroundColor: (Highcharts.theme && Highcharts.theme.legendBackgroundColor) || "#FFFFFF",
+                backgroundColor:
+                    (Highcharts.theme
+                        && Highcharts.theme.legendBackgroundColor)
+                    || "#FFFFFF",
             },
-            series: [{
-                name: "Precipitation",
-                type: "column",
-                yAxis: 1,
-                data: this.getPrecipitationForecast(),
-                tooltip: {
-                    valueSuffix: " mm",
+            series: [
+                {
+                    name: "Precipitation",
+                    type: "column",
+                    yAxis: 1,
+                    data: this.getPrecipitationForecast(),
+                    tooltip: {
+                        valueSuffix: " mm",
+                    },
+                    color: "#6495ED",
                 },
-                color: "#6495ED",
-
-            }, {
-                name: "Pressure",
-                type: "spline",
-                yAxis: 2,
-                data: this.getPressureForecast(),
-                marker: {
-                    enabled: false,
+                {
+                    name: "Pressure",
+                    type: "spline",
+                    yAxis: 2,
+                    data: this.getPressureForecast(),
+                    marker: {
+                        enabled: false,
+                    },
+                    dashStyle: "shortdot",
+                    tooltip: {
+                        valueSuffix: " hpa",
+                    },
+                    color: "#000",
                 },
-                dashStyle: "shortdot",
-                tooltip: {
-                    valueSuffix: " hpa",
+                {
+                    name: "Temperature",
+                    type: "spline",
+                    data: this.getTemperatureAxisData(),
+                    tooltip: {
+                        valueSuffix: ` ${this.getUnitsFormat()}`,
+                    },
+                    color: "#F00",
                 },
-                color: "#000",
-
-            }, {
-                name: "Temperature",
-                type: "spline",
-                data: this.getTemperatureAxisData(),
-                tooltip: {
-                    valueSuffix: ` ${this.getUnitsFormat()}`,
-                },
-                color: "#F00",
-            }],
+            ],
         });
 
         parentElement.appendChild(chart);

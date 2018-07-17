@@ -2,6 +2,11 @@ function errLocation(err) {
     console.log(`ERROR: ${err.message}`);
 }
 
-export default (getLocation) => {
-    navigator.geolocation.getCurrentPosition(getLocation, errLocation, { enableHighAccuracy: false, maximumAge: 3e5 });
+const getGeolocation = (getLocation) => {
+    navigator.geolocation.getCurrentPosition(getLocation, errLocation, {
+        enableHighAccuracy: false,
+        maximumAge: 3e5,
+    });
 };
+
+export default getGeolocation;

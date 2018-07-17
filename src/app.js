@@ -7,8 +7,8 @@ import DateComponent from "./components/date";
 import UnitsFormatComponent from "./components/units-format";
 import SearchForm from "./components/search-form";
 import unitsFormat from "./constants/units-format";
-import citiesSet from "./collections/cities";
 import geolocation from "./services/geolocation";
+import CitiesStorage from "./services/cities-storage";
 
 setTimeout(() => {
     const optionsContainer = document.createElement("div");
@@ -20,14 +20,12 @@ setTimeout(() => {
     UnitsFormatComponent.render(optionsContainer);
 
     document.querySelector(".header").appendChild(optionsContainer);
-}, 20);
+}, 50);
 
-geolocation(async (position) => {
-    const { coords } = position;
-
+async function renderCurrentForecast(lat, lon) {
     try {
-        const weatherResponse = await openWeatherMapAPI.getWeatherByGeographicCoordinates(coords.latitude, coords.longitude, unitsFormat.METRIC);
-        const forecastResponse = await openWeatherMapAPI.getForecastByGeographicCoordinates(coords.latitude, coords.longitude, unitsFormat.METRIC);
+        const weatherResponse = await openWeatherMapAPI.getWeatherByGeographicCoordinates(lat, lon, unitsFormat.METRIC);
+        const forecastResponse = await openWeatherMapAPI.getForecastByGeographicCoordinates(lat, lon, unitsFormat.METRIC);
 
         const currentWeather = new Weather(weatherResponse.data);
         const forecastChart = new ForecastChart(forecastResponse.data);
@@ -35,9 +33,14 @@ geolocation(async (position) => {
 
         forecastBlock.render();
 
-        citiesSet.add(weatherResponse.data.name);
+        CitiesStorage.setGeolocationCity(currentWeather.city);
     } catch (err) {
         console.log(`ERROR: ${err.message}`);
         alert("An error has occurred! We apologize");
     }
+}
+
+geolocation((position) => {
+    const { coords } = position;
+    renderCurrentForecast(coords.latitude, coords.longitude);
 });
