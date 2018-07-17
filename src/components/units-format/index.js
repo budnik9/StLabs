@@ -18,39 +18,40 @@ function toggleActiveButton(targetEvent) {
     targetEvent.className = `${targetEvent.className} ${targetEvent.className}_active`;
 }
 
-function handleClick(event) {
-    event.preventDefault();
-
-    const mainContent = document.querySelector(".main-content");
-    const unitsFormat = event.target.value;
-
-    mainContent.innerHTML = "";
-
-    const citiesStorage = new CitiesStorage();
-
-    citiesStorage.getAllCities().forEach(async (city) => {
-        const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(city, unitsFormat);
-        const forecastResponse = await openWeatherMapAPI.getForecastByCityName(city, unitsFormat);
-
-        const currentWeather = new Weather(weatherResponse.data, unitsFormat);
-        const forecastChart = new ForecastChart(forecastResponse.data, unitsFormat);
-        const forecastBlock = new Forecast(currentWeather, forecastChart);
-
-        forecastBlock.render();
-    });
-
-    toggleActiveButton(event.target);
-}
-
 class UnitsFormat {
     static getCurrentUnitsFormat() {
         const buttons = document.querySelectorAll(".units-format button");
 
         for (let i = 0; i < buttons.length; i += 1) {
             if (buttons[i].className.includes("_active")) return buttons[i].value;
+
         }
 
         return unitsFormatConstants.METRIC;
+    }
+
+    static handleClick(event) {
+        event.preventDefault();
+
+        const mainContent = document.querySelector(".main-content");
+        const unitsFormat = event.target.value;
+
+        mainContent.innerHTML = "";
+
+        const citiesStorage = new CitiesStorage();
+
+        citiesStorage.getAllCities().forEach(async (city) => {
+            const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(city, unitsFormat);
+            const forecastResponse = await openWeatherMapAPI.getForecastByCityName(city, unitsFormat);
+
+            const currentWeather = new Weather(weatherResponse.data, unitsFormat);
+            const forecastChart = new ForecastChart(forecastResponse.data, unitsFormat);
+            const forecastBlock = new Forecast(currentWeather, forecastChart);
+
+            forecastBlock.render();
+        });
+
+        toggleActiveButton(event.target);
     }
 
     static template() {
@@ -65,7 +66,7 @@ class UnitsFormat {
         const unitsFormat = DOM.createDomElement("div", "units-format");
 
         unitsFormat.innerHTML = UnitsFormat.template();
-        unitsFormat.addEventListener("click", handleClick);
+        unitsFormat.addEventListener("click", UnitsFormat.handleClick);
 
         parentElement.appendChild(unitsFormat);
     }

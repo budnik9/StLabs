@@ -2,11 +2,10 @@ import storageConstants from "../../constants/cities-storage";
 
 class CitiesStorage {
     constructor() {
-        this.favoriteCities = localStorage.getItem(storageConstants.FAVORITE_CITIES_KEY) || [];
-        this.length = this.favoriteCities.length || 0;
+        this.favoriteCities = JSON.parse(localStorage.getItem(storageConstants.FAVORITE_CITIES_KEY)) || [];
     }
 
-    static setGeolocationCity(city) {
+    static setCurrentGeolocationCity(city) {
         try {
             localStorage.setItem(storageConstants.GEOLOCATION_CITY_KEY, city);
         } catch (e) {
@@ -18,6 +17,10 @@ class CitiesStorage {
         return storageConstants.MAX_LENGTH;
     }
 
+    getLength() {
+        return this.favoriteCities.length + 1;
+    }
+
     getAllCities() {
         return [].concat(
             localStorage.getItem(storageConstants.GEOLOCATION_CITY_KEY),
@@ -25,11 +28,14 @@ class CitiesStorage {
         );
     }
 
+    getFavoriteCities() {
+        return this.favoriteCities;
+    }
+
     addCity(city) {
         this.favoriteCities.push(city);
-        this.length += 1;
 
-        localStorage.setItem(storageConstants.FAVORITE_CITIES_KEY, this.favoriteCities);
+        localStorage.setItem(storageConstants.FAVORITE_CITIES_KEY, JSON.stringify(this.favoriteCities));
     }
 }
 

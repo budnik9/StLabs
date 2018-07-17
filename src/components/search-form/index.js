@@ -12,36 +12,36 @@ class SearchForm {
 
         const citiesStorage = new CitiesStorage();
 
-        if (citiesStorage.length >= 4) {
-            console.log(citiesStorage.length);
+        if (citiesStorage.getLength() >= CitiesStorage.getMaxLength()) {
+            console.log(citiesStorage.getLength());
             alert("You can't add more than 5 forecasts to page");
+
         } else {
-            const city = document.querySelector(".search-form__input").value;
+            const input = document.querySelector(".search-form__input");
             const unitsFormat = UnitsFormat.getCurrentUnitsFormat();
-            console.log(citiesStorage.length);
+    
             try {
                 const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(
-                    city,
+                    input.value,
                     unitsFormat,
                 );
                 const forecastResponse = await openWeatherMapAPI.getForecastByCityName(
-                    city,
+                    input.value,
                     unitsFormat,
                 );
 
-                const currentWeather = new Weather(weatherResponse.data);
-                const forecastChart = new ForecastChart(forecastResponse.data);
-                const forecastBlock = new Forecast(
-                    currentWeather,
-                    forecastChart,
-                );
+                const currentWeather = new Weather(weatherResponse.data, unitsFormat);
+                const forecastChart = new ForecastChart(forecastResponse.data, unitsFormat);
+                const forecastBlock = new Forecast(currentWeather, forecastChart);
 
                 forecastBlock.render();
 
-                citiesStorage.addCity(city);
+                citiesStorage.addCity(input.value);
+                input.value = "";
             } catch (err) {
                 console.log(`ERROR: ${err.message}`);
                 alert("An error has occurred! We apologize");
+                input.value = "";
             }
         }
     }
@@ -51,9 +51,7 @@ class SearchForm {
                 <button class="search-form__button" type="button">Add</button>`;
     }
 
-    static render(
-        parentElement = document.querySelector(".options-container"),
-    ) {
+    static render(parentElement = document.querySelector(".options-container")) {
         const form = DOM.createDomElement("form", "search-form");
 
         form.innerHTML = SearchForm.template();

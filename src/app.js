@@ -22,18 +22,38 @@ setTimeout(() => {
     document.querySelector(".header").appendChild(optionsContainer);
 }, 50);
 
-async function renderCurrentForecast(lat, lon) {
+async function addForecastToPage(city) {
+    const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(city, unitsFormat);
+    const forecastResponse = await openWeatherMapAPI.getForecastByCityName(city, unitsFormat);
+
+    const currentWeather = new Weather(weatherResponse.data, unitsFormat);
+    const forecastChart = new ForecastChart(forecastResponse.data, unitsFormat);
+    const forecastBlock = new Forecast(currentWeather, forecastChart);
+
+    forecastBlock.render();
+}
+
+async function renderCurrentGeolocationForecast(lat, lon) {
+    const weatherResponse = await openWeatherMapAPI.getWeatherByGeographicCoordinates(lat, lon, unitsFormat.METRIC);
+    const forecastResponse = await openWeatherMapAPI.getForecastByGeographicCoordinates(lat, lon, unitsFormat.METRIC);
+
+    const currentWeather = new Weather(weatherResponse.data);
+    const forecastChart = new ForecastChart(forecastResponse.data);
+    const forecastBlock = new Forecast(currentWeather, forecastChart);
+
+    forecastBlock.render();
+
+    CitiesStorage.setCurrentGeolocationCity(currentWeather.city);
+}
+
+function renderAllForecasts(lat, lon) {
     try {
-        const weatherResponse = await openWeatherMapAPI.getWeatherByGeographicCoordinates(lat, lon, unitsFormat.METRIC);
-        const forecastResponse = await openWeatherMapAPI.getForecastByGeographicCoordinates(lat, lon, unitsFormat.METRIC);
+        renderCurrentGeolocationForecast(lat, lon);
 
-        const currentWeather = new Weather(weatherResponse.data);
-        const forecastChart = new ForecastChart(forecastResponse.data);
-        const forecastBlock = new Forecast(currentWeather, forecastChart);
+        const citiesStorage = new CitiesStorage();
 
-        forecastBlock.render();
+        citiesStorage.getFavoriteCities().forEach(addForecastToPage);
 
-        CitiesStorage.setGeolocationCity(currentWeather.city);
     } catch (err) {
         console.log(`ERROR: ${err.message}`);
         alert("An error has occurred! We apologize");
@@ -42,5 +62,5 @@ async function renderCurrentForecast(lat, lon) {
 
 geolocation((position) => {
     const { coords } = position;
-    renderCurrentForecast(coords.latitude, coords.longitude);
+    renderAllForecasts(coords.latitude, coords.longitude);
 });
