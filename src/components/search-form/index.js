@@ -5,6 +5,7 @@ import Forecast from "../forecast";
 import UnitsFormat from "../units-format";
 import DOM from "../../services/dom";
 import CitiesStorage from "../../services/cities-storage";
+import RegExp from "../../constants/reg-exp";
 
 class SearchForm {
     static async handleClick(event) {
@@ -19,16 +20,14 @@ class SearchForm {
         } else {
             const input = document.querySelector(".search-form__input");
             const unitsFormat = UnitsFormat.getCurrentUnitsFormat();
+
+            if (!SearchForm.isValid(input.value)) {
+                throw new Error("invalid city name");
+            }
     
             try {
-                const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(
-                    input.value,
-                    unitsFormat,
-                );
-                const forecastResponse = await openWeatherMapAPI.getForecastByCityName(
-                    input.value,
-                    unitsFormat,
-                );
+                const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(input.value, unitsFormat);
+                const forecastResponse = await openWeatherMapAPI.getForecastByCityName(input.value, unitsFormat);
 
                 const currentWeather = new Weather(weatherResponse.data, unitsFormat);
                 const forecastChart = new ForecastChart(forecastResponse.data, unitsFormat);
@@ -46,6 +45,10 @@ class SearchForm {
         }
     }
 
+    static isValid(value) {
+        return RegExp.CITY_NAME.test(value);
+    }
+
     static template() {
         return `<input class="search-form__input" placeholder="city">
                 <button class="search-form__button" type="button">Add</button>`;
@@ -58,6 +61,8 @@ class SearchForm {
         form.querySelector(".search-form__button").addEventListener("click", SearchForm.handleClick);
         
         parentElement.appendChild(form);
+
+        return form;
     }
 }
 

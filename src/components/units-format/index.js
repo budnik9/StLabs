@@ -60,15 +60,15 @@ class UnitsFormat {
                 <button class="units-format__kelvin" type="button" value="standard">K</button>`;
     }
 
-    static render(
-        parentElement = document.querySelector(".options-container"),
-    ) {
+    static render(parentElement = document.querySelector(".options-container")) {
         const unitsFormat = DOM.createDomElement("div", "units-format");
 
         unitsFormat.innerHTML = UnitsFormat.template();
         unitsFormat.addEventListener("click", UnitsFormat.handleClick);
 
         parentElement.appendChild(unitsFormat);
+
+        return unitsFormat;
     }
 }
 

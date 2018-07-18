@@ -15,7 +15,9 @@ class Forecast {
         this.weatherComponent.render(forecastBlock);
         this.forecastChartComponent.render(forecastBlock);
 
-        parentElement.appendChild(forecastBlock);
+        parentElement.prepend(forecastBlock);
+
+        return forecastBlock;
     }
 }
 

@@ -71,6 +71,8 @@ class Weather {
 
         weatherInfo.innerHTML = this.template();
         parentElement.appendChild(weatherInfo);
+        
+        return weatherInfo;
     }
 }
 

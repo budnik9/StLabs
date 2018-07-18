@@ -89,9 +89,7 @@ class ForecastChart {
                 height: 500,
             },
             title: {
-                text: `Current weather and forecasts in ${this.city}, ${
-                    this.country
-                }`,
+                text: `Current weather and forecasts in ${this.city}, ${this.country}`,
                 style: {
                     fontWeight: "bold",
                     fontSize: "32px",
@@ -207,6 +205,8 @@ class ForecastChart {
         });
 
         parentElement.appendChild(chart);
+
+        return chart;
     }
 }
 

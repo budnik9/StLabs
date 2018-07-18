@@ -15,6 +15,8 @@ class DateComponent {
         );
 
         parentElement.appendChild(date);
+
+        return date;
     }
 }
 
