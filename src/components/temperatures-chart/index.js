@@ -2,21 +2,20 @@ import Highcharts from "highcharts";
 import Exporting from "highcharts/modules/exporting";
 import DOM from "../../services/dom";
 import openWeatherMapAPI from "../../services/open-weather-map-api";
-import UnitsFormat from "../units-format";
 import UnitsFormatConstants from "../../constants/units-format";
 import ChartOptions from "../../constants/chart-options";
 
 Exporting(Highcharts);
 
 class TemperaturesChart {
-    constructor(cities) {
+    constructor(cities, unitsFormat = UnitsFormatConstants.METRIC) {
         this.cities = cities;
+        this.unitsFormat = unitsFormat;
     }
 
     getAllSeries() {
-        const unitsFormat = UnitsFormat.getCurrentUnitsFormat();
 
-        return Promise.all(this.cities.map(city => openWeatherMapAPI.getForecastByCityName(city, unitsFormat)))
+        return Promise.all(this.cities.map(city => openWeatherMapAPI.getForecastByCityName(city, this.unitsFormat)))
             .then(forecasts => forecasts.map((forecast) => {
                 const temperatures = forecast.data.list.slice(0, 10).map(item => Math.round(item.main.temp * 10) / 10);
                 const city = forecast.data.city.name;
@@ -25,7 +24,7 @@ class TemperaturesChart {
                     name: city,
                     data: temperatures,
                     tooltip: {
-                        valueSuffix: ` ${TemperaturesChart.getUnitsFormat()}`,
+                        valueSuffix: ` ${this.transformUnitsFormat()}`,
                     },
                 };
             }))
@@ -33,8 +32,7 @@ class TemperaturesChart {
     }
 
     async getTimeForForecastValues() {
-        const unitsFormat = UnitsFormat.getCurrentUnitsFormat();
-        const forecast = await openWeatherMapAPI.getForecastByCityName(this.cities[0], unitsFormat);
+        const forecast = await openWeatherMapAPI.getForecastByCityName(this.cities[0], this.unitsFormat);
 
         return forecast.data.list.slice(0, 10).map((item) => {
             const year = parseInt(item.dt_txt.slice(0, 4), 10);
@@ -50,8 +48,8 @@ class TemperaturesChart {
         });
     }
 
-    static getUnitsFormat() {
-        switch (UnitsFormat.getCurrentUnitsFormat()) {
+    transformUnitsFormat() {
+        switch (this.unitsFormat) {
         case UnitsFormatConstants.STANDARD:
             return "K";
         case UnitsFormatConstants.METRIC:
@@ -90,13 +88,13 @@ class TemperaturesChart {
 
             yAxis: {
                 title: {
-                    text: `Temperature ${TemperaturesChart.getUnitsFormat()}`,
+                    text: `Temperature ${this.transformUnitsFormat()}`,
                     style: {
                         fontSize: "18px",
                     },
                 },
                 labels: {
-                    format: `{value} ${TemperaturesChart.getUnitsFormat()}`,
+                    format: `{value} ${this.transformUnitsFormat()}`,
                 },
             },
 
@@ -115,7 +113,7 @@ class TemperaturesChart {
             responsive: {
                 rules: [{
                     condition: {
-                        maxWidth: 500,
+                        maxWidth: 800,
                     },
                     chartOptions: {
                         legend: {

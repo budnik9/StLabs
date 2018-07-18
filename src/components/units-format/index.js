@@ -2,6 +2,7 @@ import openWeatherMapAPI from "../../services/open-weather-map-api";
 import Weather from "../weather";
 import Forecast from "../forecast";
 import ForecastChart from "../forecast-chart";
+import TemperaturesChart from "../temperatures-chart";
 import CitiesStorage from "../../services/cities-storage";
 import unitsFormatConstants from "../../constants/units-format";
 import DOM from "../../services/dom";
@@ -16,6 +17,17 @@ function toggleActiveButton(targetEvent) {
     }
 
     targetEvent.className = `${targetEvent.className} ${targetEvent.className}_active`;
+}
+
+async function renderCurrentGeolocationForecast(parentElement, city, unitsFormat) {
+    const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(city, unitsFormat);
+    const forecastResponse = await openWeatherMapAPI.getForecastByCityName(city, unitsFormat);
+
+    const currentWeather = new Weather(weatherResponse.data, unitsFormat);
+    const forecastChart = new ForecastChart(forecastResponse.data, unitsFormat);
+    const forecastBlock = new Forecast(currentWeather, forecastChart);
+
+    forecastBlock.render(parentElement);
 }
 
 class UnitsFormat {
@@ -38,18 +50,15 @@ class UnitsFormat {
 
         mainContent.innerHTML = "";
 
+        const city = CitiesStorage.getCurrentGeolocationCity();
+
+        renderCurrentGeolocationForecast(mainContent, city, unitsFormat);
+
         const citiesStorage = new CitiesStorage();
+        const cities = citiesStorage.getAllCities();
 
-        citiesStorage.getAllCities().forEach(async (city) => {
-            const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(city, unitsFormat);
-            const forecastResponse = await openWeatherMapAPI.getForecastByCityName(city, unitsFormat);
-
-            const currentWeather = new Weather(weatherResponse.data, unitsFormat);
-            const forecastChart = new ForecastChart(forecastResponse.data, unitsFormat);
-            const forecastBlock = new Forecast(currentWeather, forecastChart);
-
-            forecastBlock.render();
-        });
+        const temperaturesChart = new TemperaturesChart(cities, unitsFormat);
+        temperaturesChart.render(mainContent);
 
         toggleActiveButton(event.target);
     }

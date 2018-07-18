@@ -31,9 +31,9 @@ class Weather {
 
         return `<span class="weather-info__city">${this.city}, ${this.country}</span>
                 <img class="weather-info__icon" src="${configServer.ICONS_URL}${this.iconCode}.png">
-                <span class="weather-info__temperature">${this.temperature} ${this.getUnitsFormat()}</span>
+                <span class="weather-info__temperature">${this.temperature} ${this.transformUnitsFormat()}</span>
                 <span class="weather-info__description">${this.weatherDescription}</span>
-                <span class="weather-info__wind">Wind: ${this.windSpeed} ${this.getUnitsFormat() === "°F" ? "m/h" : "m/s"}</span>
+                <span class="weather-info__wind">Wind: ${this.windSpeed} ${this.transformUnitsFormat() === "°F" ? "m/h" : "m/s"}</span>
                 <span class="weather-info__pressure">Pressure: ${this.pressure} hpa</span>
                 <span class="weather-info__humidity">Humidity: ${this.humidity} %</span>
                 <span class="weather-info__sunrise">Sunrise: ${sunriseTimeTxt.hours.padStart(2, "0")}:${sunriseTimeTxt.minutes.padStart(2, "0")}</span>
@@ -41,7 +41,7 @@ class Weather {
                 <span class="weather-info__coordinates">Geo coordinates: [${this.cityCoords.lat}, ${this.cityCoords.lon}]</span>`;
     }
 
-    getUnitsFormat() {
+    transformUnitsFormat() {
         switch (this.unitsFormat) {
         case UnitsFormat.STANDARD:
             return "K";

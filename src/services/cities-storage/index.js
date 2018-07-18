@@ -13,6 +13,10 @@ class CitiesStorage {
         }
     }
 
+    static getCurrentGeolocationCity() {
+        return localStorage.getItem(storageConstants.GEOLOCATION_CITY_KEY);
+    }
+
     static getMaxLength() {
         return storageConstants.MAX_LENGTH;
     }
@@ -36,6 +40,12 @@ class CitiesStorage {
         this.favoriteCities.push(city);
 
         localStorage.setItem(storageConstants.FAVORITE_CITIES_KEY, JSON.stringify(this.favoriteCities));
+
+        return this.favoriteCities;
+    }
+
+    includes(city) {
+        return this.getAllCities().includes(city);
     }
 }
 

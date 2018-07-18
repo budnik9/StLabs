@@ -6,43 +6,21 @@ import UnitsFormat from "../units-format";
 import DOM from "../../services/dom";
 import CitiesStorage from "../../services/cities-storage";
 import RegExp from "../../constants/reg-exp";
+import TemperaturesChart from "../temperatures-chart";
 
 class SearchForm {
-    static async handleClick(event) {
+    static handleClick(event) {
         event.preventDefault();
 
         const citiesStorage = new CitiesStorage();
 
         if (citiesStorage.getLength() >= CitiesStorage.getMaxLength()) {
-            console.log(citiesStorage.getLength());
             alert("You can't add more than 5 forecasts to page");
 
-        } else {
-            const input = document.querySelector(".search-form__input");
-            const unitsFormat = UnitsFormat.getCurrentUnitsFormat();
-
-            if (!SearchForm.isValid(input.value)) {
-                throw new Error("invalid city name");
-            }
-    
-            try {
-                const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(input.value, unitsFormat);
-                const forecastResponse = await openWeatherMapAPI.getForecastByCityName(input.value, unitsFormat);
-
-                const currentWeather = new Weather(weatherResponse.data, unitsFormat);
-                const forecastChart = new ForecastChart(forecastResponse.data, unitsFormat);
-                const forecastBlock = new Forecast(currentWeather, forecastChart);
-
-                forecastBlock.render();
-
-                citiesStorage.addCity(input.value);
-                input.value = "";
-            } catch (err) {
-                console.log(`ERROR: ${err.message}`);
-                alert("An error has occurred! We apologize");
-                input.value = "";
-            }
+            return;
         }
+
+        replaceTemperaturesChart();
     }
 
     static isValid(value) {
@@ -64,6 +42,37 @@ class SearchForm {
 
         return form;
     }
+}
+
+function replaceTemperaturesChart() {
+    const input = document.querySelector(".search-form__input");
+    const citiesStorage = new CitiesStorage();
+
+    if (!SearchForm.isValid(input.value) || citiesStorage.includes(input.value)) {
+        input.value = "";
+        alert("invalid city name");
+
+        return;
+    }
+
+    const unitsFormat = UnitsFormat.getCurrentUnitsFormat();
+    const mainContent = document.querySelector(".main-content");
+
+    let cities = citiesStorage.getAllCities();
+
+    if (cities.length > 1) {
+        const temperaturesChart = mainContent.querySelector(".temperatures-chart");
+        mainContent.removeChild(temperaturesChart);
+    }
+
+    citiesStorage.addCity(input.value);
+    cities = citiesStorage.getAllCities();
+
+    const newTemperaturesChart = new TemperaturesChart(cities, unitsFormat);
+
+    newTemperaturesChart.render(mainContent);
+
+    input.value = "";
 }
 
 export default SearchForm;

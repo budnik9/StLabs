@@ -12,6 +12,7 @@ import OptionsContainer from "./components/options-container";
 import DateComponent from "./components/date";
 import UnitsFormatComponent from "./components/units-format";
 import SearchForm from "./components/search-form";
+import DeleteSection from "./components/delete-section";
 import unitsFormat from "./constants/units-format";
 import geolocation from "./services/geolocation";
 import CitiesStorage from "./services/cities-storage";
@@ -48,9 +49,18 @@ function renderAllForecasts(lat, lon) {
         renderCurrentGeolocationForecast(lat, lon);
 
         const citiesStorage = new CitiesStorage();
-        const temperaturesChart = new TemperaturesChart(citiesStorage.getAllCities());
-        
-        temperaturesChart.render(mainContent);
+
+        if (citiesStorage.getLength() > 1) {
+            const cities = citiesStorage.getAllCities();
+            const temperaturesChart = new TemperaturesChart(cities, unitsFormat.Metric);
+
+            temperaturesChart.render(mainContent)
+                .then(() => {
+                    const deleteSection = new DeleteSection(citiesStorage.getFavoriteCities());
+
+                    deleteSection.render(mainContent);
+                });
+        }
     } catch (err) {
         console.log(`ERROR: ${err.message}`);
         alert("An error has occurred! We apologize");

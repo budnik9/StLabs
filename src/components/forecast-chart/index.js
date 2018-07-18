@@ -15,7 +15,7 @@ class ForecastChart {
         this.unitsFormat = unitsFormat;
     }
 
-    getUnitsFormat() {
+    transformUnitsFormat() {
         switch (this.unitsFormat) {
         case UnitsFormat.STANDARD:
             return "K";
@@ -105,7 +105,7 @@ class ForecastChart {
                 {
                     // Temperature yAxis
                     labels: {
-                        format: `{value} ${this.getUnitsFormat()}`,
+                        format: `{value} ${this.transformUnitsFormat()}`,
                         style: {
                             color: "#F00",
                         },
@@ -197,7 +197,7 @@ class ForecastChart {
                     type: "spline",
                     data: this.getTemperatureAxisData(),
                     tooltip: {
-                        valueSuffix: ` ${this.getUnitsFormat()}`,
+                        valueSuffix: ` ${this.transformUnitsFormat()}`,
                     },
                     color: "#F00",
                 },
