@@ -1,8 +1,9 @@
-import openWeatherMapAPI from "../../services/open-weather-map-api";
 import Weather from "../weather";
+import openWeatherMapAPI from "../../services/open-weather-map-api";
 import Forecast from "../forecast";
 import ForecastChart from "../forecast-chart";
 import TemperaturesChart from "../temperatures-chart";
+import DeleteSection from "../delete-section";
 import CitiesStorage from "../../services/cities-storage";
 import unitsFormatConstants from "../../constants/units-format";
 import DOM from "../../services/dom";
@@ -16,12 +17,24 @@ function toggleActiveButton(targetEvent) {
         }
     }
 
-    targetEvent.className = `${targetEvent.className} ${targetEvent.className}_active`;
+    targetEvent.className = `${targetEvent.className} ${
+        targetEvent.className
+    }_active`;
 }
 
-async function renderCurrentGeolocationForecast(parentElement, city, unitsFormat) {
-    const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(city, unitsFormat);
-    const forecastResponse = await openWeatherMapAPI.getForecastByCityName(city, unitsFormat);
+async function renderCurrentGeolocationForecast(
+    parentElement,
+    city,
+    unitsFormat,
+) {
+    const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(
+        city,
+        unitsFormat,
+    );
+    const forecastResponse = await openWeatherMapAPI.getForecastByCityName(
+        city,
+        unitsFormat,
+    );
 
     const currentWeather = new Weather(weatherResponse.data, unitsFormat);
     const forecastChart = new ForecastChart(forecastResponse.data, unitsFormat);
@@ -35,8 +48,8 @@ class UnitsFormat {
         const buttons = document.querySelectorAll(".units-format button");
 
         for (let i = 0; i < buttons.length; i += 1) {
-            if (buttons[i].className.includes("_active")) return buttons[i].value;
-
+            if (buttons[i].className.includes("_active"))
+                return buttons[i].value;
         }
 
         return unitsFormatConstants.METRIC;
@@ -58,7 +71,13 @@ class UnitsFormat {
         const cities = citiesStorage.getAllCities();
 
         const temperaturesChart = new TemperaturesChart(cities, unitsFormat);
-        temperaturesChart.render(mainContent);
+        temperaturesChart.render(mainContent).then(() => {
+            const deleteSection = new DeleteSection(
+                citiesStorage.getFavoriteCities(),
+            );
+
+            deleteSection.render(mainContent);
+        });
 
         toggleActiveButton(event.target);
     }
@@ -69,7 +88,9 @@ class UnitsFormat {
                 <button class="units-format__kelvin" type="button" value="standard">K</button>`;
     }
 
-    static render(parentElement = document.querySelector(".options-container")) {
+    static render(
+        parentElement = document.querySelector(".options-container"),
+    ) {
         const unitsFormat = DOM.createDomElement("div", "units-format");
 
         unitsFormat.innerHTML = UnitsFormat.template();

@@ -47,6 +47,14 @@ class CitiesStorage {
     includes(city) {
         return this.getAllCities().includes(city);
     }
+
+    removeCityFromFavorites(city) {
+        const index = this.favoriteCities.indexOf(city);
+
+        this.favoriteCities.splice(index, 1);
+
+        localStorage.setItem(storageConstants.FAVORITE_CITIES_KEY, JSON.stringify(this.favoriteCities));
+    }
 }
 
 export default CitiesStorage;

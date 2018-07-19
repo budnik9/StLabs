@@ -1,8 +1,29 @@
 import DOM from "../../services/dom";
+import UnitsFormat from "../units-format";
+import CitiesStorage from "../../services/cities-storage";
+import TemperaturesChart from "../temperatures-chart";
 
 class DeleteSection {
     constructor(itemsText) {
         this.itemsText = itemsText;
+    }
+
+    handleClick(event) {
+        event.preventDefault();
+
+        const [text, icon] = this.children;
+
+        if (event.target === icon) {
+            const citiesStorage = new CitiesStorage();
+            const city = text.textContent;
+
+            citiesStorage.removeCityFromFavorites(city);
+
+            const unitsFormat = UnitsFormat.getCurrentUnitsFormat();
+
+            replaceTemperaturesChart(citiesStorage, unitsFormat)
+                .then(() => addNewDeleteSection(citiesStorage));
+        }
     }
 
     render(parentElement) {
@@ -21,6 +42,8 @@ class DeleteSection {
             item.appendChild(text);
             item.appendChild(icon);
 
+            item.addEventListener("click", this.handleClick);
+
             fragment.appendChild(item);
         });
 
@@ -28,6 +51,35 @@ class DeleteSection {
         parentElement.appendChild(deleteSection);
 
         return deleteSection;
+    }
+}
+
+
+function replaceTemperaturesChart(citiesStorage, unitsFormat) {
+    const mainContent = document.querySelector(".main-content");
+    const temperaturesChart = mainContent.querySelector(".temperatures-chart");
+    const deleteSection = mainContent.querySelector(".delete-section");
+
+    mainContent.removeChild(deleteSection);
+    mainContent.removeChild(temperaturesChart);
+
+    const cities = citiesStorage.getAllCities();
+
+    if (cities.length > 1) {
+        const newTemperaturesChart = new TemperaturesChart(cities, unitsFormat);
+        return newTemperaturesChart.render(mainContent);
+    }
+
+    return Promise.resolve();
+}
+
+function addNewDeleteSection(citiesStorage) {
+    const mainContent = document.querySelector(".main-content");
+    const cities = citiesStorage.getAllCities();
+
+    if (cities.length > 1) {
+        const newDeleteSection = new DeleteSection(citiesStorage.getFavoriteCities());
+        newDeleteSection.render(mainContent);
     }
 }
 
