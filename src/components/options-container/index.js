@@ -1,13 +1,13 @@
 import DOM from "../../services/dom";
 
-class OptionsContainer {
-    static render(parentElement) {
-        const optionsContainer = DOM.createDomElement("div", "options-container");
+function render(parentElement) {
+    const optionsContainer = DOM.createDomElement("div", "options-container");
 
-        parentElement.appendChild(optionsContainer);
+    parentElement.appendChild(optionsContainer);
 
-        return optionsContainer;
-    }
+    return optionsContainer;
 }
 
-export default OptionsContainer;
+export default {
+    render,
+};

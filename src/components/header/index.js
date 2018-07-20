@@ -1,13 +1,13 @@
 import DOM from "../../services/dom";
 
-class Header {
-    static render(parentElement) {
-        const header = DOM.createDomElement("header", "header");
+function render(parentElement) {
+    const header = DOM.createDomElement("header", "header");
 
-        parentElement.appendChild(header);
+    parentElement.appendChild(header);
 
-        return header;
-    }
+    return header;
 }
 
-export default Header;
+export default {
+    render,
+};

@@ -6,18 +6,18 @@ const dateOptions = Object.freeze({
     day: "numeric",
 });
 
-class DateComponent {
-    static render(parentElement = document.querySelector(".options-container")) {
-        const date = DOM.createDomElement(
-            "span",
-            "date",
-            new Date().toLocaleDateString("en-US", dateOptions),
-        );
+function render(parentElement = document.querySelector(".options-container")) {
+    const date = DOM.createDomElement(
+        "span",
+        "date",
+        new Date().toLocaleDateString("en-US", dateOptions),
+    );
 
-        parentElement.appendChild(date);
+    parentElement.appendChild(date);
 
-        return date;
-    }
+    return date;
 }
 
-export default DateComponent;
+export default {
+    render,
+};

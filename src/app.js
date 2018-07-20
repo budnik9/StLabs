@@ -41,7 +41,8 @@ async function renderCurrentGeolocationForecast(lat, lon) {
 
     forecastBlock.render(mainContent);
 
-    CitiesStorage.setCurrentGeolocationCity(currentWeather.city);
+    const citiesStorage = new CitiesStorage();
+    citiesStorage.setCurrentGeolocationCity(currentWeather.city);
 }
 
 function renderAllForecasts(lat, lon) {
@@ -62,12 +63,44 @@ function renderAllForecasts(lat, lon) {
                 });
         }
     } catch (err) {
+        const citiesStorage = new CitiesStorage();
+
+        const cities = citiesStorage.getAllCities();
+        const temperaturesChart = new TemperaturesChart(cities, unitsFormat.Metric);
+        
+        temperaturesChart.render(mainContent)
+            .then(() => {
+                const deleteSection = new DeleteSection(citiesStorage.getFavoriteCities());
+
+                deleteSection.render(mainContent);
+            });
+
         console.log(`ERROR: ${err.message}`);
         alert("An error has occurred! We apologize");
     }
 }
 
-geolocation((position) => {
+function getGeolocation(position) {
     const { coords } = position;
     renderAllForecasts(coords.latitude, coords.longitude);
-});
+}
+
+function errGeolocation(err) {
+    console.log(`ERROR: ${err.message}`);
+
+    const citiesStorage = new CitiesStorage();
+
+    if (citiesStorage.getLength()) {
+        const cities = citiesStorage.getFavoriteCities();
+        const temperaturesChart = new TemperaturesChart(cities, unitsFormat.Metric);
+        
+        temperaturesChart.render(mainContent)
+            .then(() => {
+                const deleteSection = new DeleteSection(citiesStorage.getFavoriteCities());
+
+                deleteSection.render(mainContent);
+            });
+    }
+}
+
+geolocation(getGeolocation, errGeolocation);

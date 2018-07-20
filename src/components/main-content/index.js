@@ -1,13 +1,13 @@
 import DOM from "../../services/dom";
 
-class MainContent {
-    static render(parentElement) {
-        const main = DOM.createDomElement("main", "main-content");
+function render(parentElement) {
+    const main = DOM.createDomElement("main", "main-content");
 
-        parentElement.appendChild(main);
+    parentElement.appendChild(main);
 
-        return main;
-    }
+    return main;
 }
 
-export default MainContent;
+export default {
+    render,
+};

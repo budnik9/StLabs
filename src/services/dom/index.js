@@ -1,12 +1,12 @@
-class DOM {
-    static createDomElement(elementType, className, textContent) {
-        const element = document.createElement(elementType);
+function createDomElement(elementType, className, textContent) {
+    const element = document.createElement(elementType);
 
-        if (className) element.className = className;
-        if (textContent) element.textContent = textContent;
+    if (className) element.className = className;
+    if (textContent) element.textContent = textContent;
 
-        return element;
-    }
+    return element;
 }
 
-export default DOM;
+export default {
+    createDomElement,
+};

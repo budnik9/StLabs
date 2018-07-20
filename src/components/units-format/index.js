@@ -3,10 +3,9 @@ import openWeatherMapAPI from "../../services/open-weather-map-api";
 import Forecast from "../forecast";
 import ForecastChart from "../forecast-chart";
 import TemperaturesChart from "../temperatures-chart";
-import DeleteSection from "../delete-section";
 import CitiesStorage from "../../services/cities-storage";
-import unitsFormatConstants from "../../constants/units-format";
 import DOM from "../../services/dom";
+import DeleteSection from "../delete-section";
 
 function toggleActiveButton(targetEvent) {
     const buttons = document.querySelectorAll(".units-format button");
@@ -17,16 +16,10 @@ function toggleActiveButton(targetEvent) {
         }
     }
 
-    targetEvent.className = `${targetEvent.className} ${
-        targetEvent.className
-    }_active`;
+    targetEvent.className = `${targetEvent.className} ${targetEvent.className}_active`;
 }
 
-async function renderCurrentGeolocationForecast(
-    parentElement,
-    city,
-    unitsFormat,
-) {
+async function renderCurrentGeolocationForecast(parentElement, city, unitsFormat) {
     const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(
         city,
         unitsFormat,
@@ -43,31 +36,22 @@ async function renderCurrentGeolocationForecast(
     forecastBlock.render(parentElement);
 }
 
-class UnitsFormat {
-    static getCurrentUnitsFormat() {
-        const buttons = document.querySelectorAll(".units-format button");
+function handleClick(event) {
+    event.preventDefault();
 
-        for (let i = 0; i < buttons.length; i += 1) {
-            if (buttons[i].className.includes("_active"))
-                return buttons[i].value;
-        }
+    const mainContent = document.querySelector(".main-content");
+    const unitsFormat = event.target.value;
 
-        return unitsFormatConstants.METRIC;
+    mainContent.innerHTML = "";
+
+    const citiesStorage = new CitiesStorage();
+    const city = citiesStorage.getCurrentGeolocationCity();
+
+    if (city) {
+        renderCurrentGeolocationForecast(mainContent, city, unitsFormat);
     }
 
-    static handleClick(event) {
-        event.preventDefault();
-
-        const mainContent = document.querySelector(".main-content");
-        const unitsFormat = event.target.value;
-
-        mainContent.innerHTML = "";
-
-        const city = CitiesStorage.getCurrentGeolocationCity();
-
-        renderCurrentGeolocationForecast(mainContent, city, unitsFormat);
-
-        const citiesStorage = new CitiesStorage();
+    if (citiesStorage.getFavoriteCities().length) {
         const cities = citiesStorage.getAllCities();
 
         const temperaturesChart = new TemperaturesChart(cities, unitsFormat);
@@ -78,28 +62,28 @@ class UnitsFormat {
 
             deleteSection.render(mainContent);
         });
-
-        toggleActiveButton(event.target);
     }
 
-    static template() {
-        return `<button class="units-format__fahrenheit" type="button" value="imperial">°F</button>
-                <button class="units-format__celsius units-format__celsius_active" type="button" value="metric">°C</button>
-                <button class="units-format__kelvin" type="button" value="standard">K</button>`;
-    }
-
-    static render(
-        parentElement = document.querySelector(".options-container"),
-    ) {
-        const unitsFormat = DOM.createDomElement("div", "units-format");
-
-        unitsFormat.innerHTML = UnitsFormat.template();
-        unitsFormat.addEventListener("click", UnitsFormat.handleClick);
-
-        parentElement.appendChild(unitsFormat);
-
-        return unitsFormat;
-    }
+    toggleActiveButton(event.target);
 }
 
-export default UnitsFormat;
+function template() {
+    return `<button class="units-format__fahrenheit" type="button" value="imperial">°F</button>
+            <button class="units-format__celsius units-format__celsius_active" type="button" value="metric">°C</button>
+            <button class="units-format__kelvin" type="button" value="standard">K</button>`;
+}
+
+function render(parentElement = document.querySelector(".options-container")) {
+    const unitsFormat = DOM.createDomElement("div", "units-format");
+
+    unitsFormat.innerHTML = template();
+    unitsFormat.addEventListener("click", handleClick);
+
+    parentElement.appendChild(unitsFormat);
+
+    return unitsFormat;
+}
+
+export default {
+    render,
+};

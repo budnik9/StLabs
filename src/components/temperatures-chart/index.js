@@ -4,6 +4,7 @@ import DOM from "../../services/dom";
 import openWeatherMapAPI from "../../services/open-weather-map-api";
 import UnitsFormatConstants from "../../constants/units-format";
 import ChartOptions from "../../constants/chart-options";
+import Spinner from "../spinner";
 
 Exporting(Highcharts);
 
@@ -11,6 +12,9 @@ class TemperaturesChart {
     constructor(cities, unitsFormat = UnitsFormatConstants.METRIC) {
         this.cities = cities;
         this.unitsFormat = unitsFormat;
+
+        this.spinner = new Spinner();
+        this.spinner.spin();
     }
 
     getAllSeries() {
@@ -61,6 +65,7 @@ class TemperaturesChart {
 
     async render(parentElement) {
         const temperaturesChart = DOM.createDomElement("section", "temperatures-chart forecast__temperatures-chart");
+
         const allSeries = await this.getAllSeries();
         const timeForForecastValues = await this.getTimeForForecastValues();
 
@@ -128,6 +133,8 @@ class TemperaturesChart {
         });
 
         parentElement.appendChild(temperaturesChart);
+
+        this.spinner.stop();
 
         return temperaturesChart;
     }

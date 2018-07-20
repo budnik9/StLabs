@@ -1,4 +1,4 @@
-import UnitsFormat from "../units-format";
+import CurrentUnitsFormat from "../units-format/current-units-format";
 import DOM from "../../services/dom";
 import CitiesStorage from "../../services/cities-storage";
 import RegExp from "../../constants/reg-exp";
@@ -16,12 +16,12 @@ function replaceTemperaturesChart(citiesStorage, newCity, unitsFormat) {
 
     let cities = citiesStorage.getAllCities();
 
-    if (cities.length > 1) {
+    if (citiesStorage.getLength() >= 1) {
         const temperaturesChart = mainContent.querySelector(".temperatures-chart");
         const deleteSection = document.querySelector(".delete-section");
 
         if (deleteSection) mainContent.removeChild(deleteSection);
-        mainContent.removeChild(temperaturesChart);
+        if (temperaturesChart) mainContent.removeChild(temperaturesChart);
     }
 
     citiesStorage.addCity(newCity);
@@ -35,54 +35,53 @@ function replaceTemperaturesChart(citiesStorage, newCity, unitsFormat) {
         });
 }
 
-
-class SearchForm {
-    static handleClick(event) {
-        event.preventDefault();
-
-        const citiesStorage = new CitiesStorage();
-
-        if (citiesStorage.getLength() >= CitiesStorage.getMaxLength()) {
-            alert("You can't add more than 5 forecasts to page");
-
-            return;
-        }
-
-        const input = document.querySelector(".search-form__input");
-
-        if (!SearchForm.isValid(input.value) || citiesStorage.includes(input.value)) {
-            input.value = "";
-            alert("invalid city name");
-
-            return;
-        }
-
-        const unitsFormat = UnitsFormat.getCurrentUnitsFormat();
-
-        replaceTemperaturesChart(citiesStorage, input.value, unitsFormat);
-
-        input.value = "";
-    }
-
-    static isValid(value) {
-        return RegExp.CITY_NAME.test(value);
-    }
-
-    static template() {
-        return `<input class="search-form__input" placeholder="city">
-                <button class="search-form__button" type="button">Add</button>`;
-    }
-
-    static render(parentElement = document.querySelector(".options-container")) {
-        const form = DOM.createDomElement("form", "search-form");
-
-        form.innerHTML = SearchForm.template();
-        form.querySelector(".search-form__button").addEventListener("click", SearchForm.handleClick);
-        
-        parentElement.appendChild(form);
-
-        return form;
-    }
+function isValid(value) {
+    return RegExp.CITY_NAME.test(value);
 }
 
-export default SearchForm;
+function handleClick(event) {
+    event.preventDefault();
+
+    const citiesStorage = new CitiesStorage();
+
+    if (citiesStorage.getLength() >= CitiesStorage.getMaxLength()) {
+        alert("You can't add more than 5 forecasts to page");
+
+        return;
+    }
+
+    const input = document.querySelector(".search-form__input");
+
+    if (!isValid(input.value) || citiesStorage.includes(input.value)) {
+        input.value = "";
+        alert("invalid city name");
+
+        return;
+    }
+
+    const unitsFormat = CurrentUnitsFormat.getCurrentUnitsFormat();
+
+    replaceTemperaturesChart(citiesStorage, input.value, unitsFormat);
+
+    input.value = "";
+}
+
+function template() {
+    return `<input class="search-form__input" placeholder="city">
+            <button class="search-form__button" type="button">Add</button>`;
+}
+
+function render(parentElement = document.querySelector(".options-container")) {
+    const form = DOM.createDomElement("form", "search-form");
+
+    form.innerHTML = template();
+    form.querySelector(".search-form__button").addEventListener("click", handleClick);
+    
+    parentElement.appendChild(form);
+
+    return form;
+}
+
+export default {
+    render,
+};

@@ -1,5 +1,5 @@
 import DOM from "../../services/dom";
-import UnitsFormat from "../units-format";
+import CurrentUnitsFormat from "../units-format/current-units-format";
 import CitiesStorage from "../../services/cities-storage";
 import TemperaturesChart from "../temperatures-chart";
 
@@ -19,7 +19,7 @@ class DeleteSection {
 
             citiesStorage.removeCityFromFavorites(city);
 
-            const unitsFormat = UnitsFormat.getCurrentUnitsFormat();
+            const unitsFormat = CurrentUnitsFormat.getCurrentUnitsFormat();
 
             replaceTemperaturesChart(citiesStorage, unitsFormat)
                 .then(() => addNewDeleteSection(citiesStorage));
@@ -63,10 +63,12 @@ function replaceTemperaturesChart(citiesStorage, unitsFormat) {
     mainContent.removeChild(deleteSection);
     mainContent.removeChild(temperaturesChart);
 
-    const cities = citiesStorage.getAllCities();
-
-    if (cities.length > 1) {
+    if ((citiesStorage.getLength() > 1 && citiesStorage.getCurrentGeolocationCity())
+        || (citiesStorage.getLength() >= 1 && !citiesStorage.getCurrentGeolocationCity())) {
+            
+        const cities = citiesStorage.getAllCities();
         const newTemperaturesChart = new TemperaturesChart(cities, unitsFormat);
+
         return newTemperaturesChart.render(mainContent);
     }
 
@@ -75,10 +77,12 @@ function replaceTemperaturesChart(citiesStorage, unitsFormat) {
 
 function addNewDeleteSection(citiesStorage) {
     const mainContent = document.querySelector(".main-content");
-    const cities = citiesStorage.getAllCities();
 
-    if (cities.length > 1) {
+    if ((citiesStorage.getLength() > 1 && citiesStorage.getCurrentGeolocationCity())
+        || (citiesStorage.getLength() >= 1 && !citiesStorage.getCurrentGeolocationCity())) {
+
         const newDeleteSection = new DeleteSection(citiesStorage.getFavoriteCities());
+
         newDeleteSection.render(mainContent);
     }
 }

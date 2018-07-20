@@ -23,7 +23,8 @@
     "autoprefixer": "^8.6.5",
     "axios": "^0.18.0",
     "highcharts": "^6.1.1",
-    "reset-css": "^4.0.1"
+    "reset-css": "^4.0.1",
+    "spin.js": "^4.0.0"
   },
   "devDependencies": {
     "babel-core": "^6.26.3",
