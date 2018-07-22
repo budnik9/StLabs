@@ -1,4 +1,3 @@
-import configServer from "../../config/config-server";
 import UnitsFormat from "../../constants/units-format";
 import DOM from "../../services/dom";
 
@@ -6,7 +5,6 @@ class Weather {
     constructor(data, unitsFormat = UnitsFormat.METRIC) {
         this.city = data.name;
         this.country = data.sys.country;
-        this.cityID = data.id;
         this.cityCoords = {
             lat: data.coord.lat,
             lon: data.coord.lon,
@@ -30,7 +28,7 @@ class Weather {
         const sunsetTimeTxt = this.getSunsetTimeTxt();
 
         return `<span class="weather-info__city">${this.city}, ${this.country}</span>
-                <img class="weather-info__icon" src="${configServer.ICONS_URL}${this.iconCode}.png">
+                <img class="weather-info__icon" src="${require(`../../../public/images/${this.iconCode}.png`)}">
                 <span class="weather-info__temperature">${this.temperature} ${this.transformUnitsFormat()}</span>
                 <span class="weather-info__description">${this.weatherDescription}</span>
                 <span class="weather-info__wind">Wind: ${this.windSpeed} ${this.transformUnitsFormat() === "°F" ? "m/h" : "m/s"}</span>

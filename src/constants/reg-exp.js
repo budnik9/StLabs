@@ -1,5 +1,2 @@
-const CITY_NAME = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
+export const REG_EXP_CITY_NAME = /^[a-zA-Z]+(?:[\s-][a-zA-Z]+)*$/;
 
-export default {
-    CITY_NAME,
-};

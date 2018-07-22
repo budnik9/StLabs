@@ -1,5 +1,5 @@
-function createDomElement(elementType, className, textContent) {
-    const element = document.createElement(elementType);
+function createDomElement(type, className, textContent) {
+    const element = document.createElement(type);
 
     if (className) element.className = className;
     if (textContent) element.textContent = textContent;

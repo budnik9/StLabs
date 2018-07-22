@@ -1,6 +1,7 @@
 const NODE_ENV = process.env.NODE_ENV || "development";
 const webpack = require("webpack");
 const MiniCssExtractPlugin = require("mini-css-extract-plugin");
+const HtmlWebPackPlugin = require("html-webpack-plugin");
 
 const extractLess = new MiniCssExtractPlugin({
     filename: "[name].[hash].css",
@@ -17,10 +18,26 @@ module.exports = {
 
     devtool: NODE_ENV === "development" ? "cheap-inline-module-source-map" : "source-map",
 
-    plugins: [extractLess],
+    plugins: [
+        new HtmlWebPackPlugin({
+            template: "./public/index.html",
+            filename: "./index.html",
+        }),
+        // new webpack.HotModuleReplacementPlugin(),
+        extractLess,
+    ],
 
     module: {
         rules: [
+            {
+                test: /\.html$/,
+                use: {
+                    loader: "html-loader",
+                    options: {
+                        minimize: true,
+                    },
+                },
+            },
             {
                 test: /\.js$/,
                 exclude: /(node_modules|bower_components)/,
@@ -52,18 +69,13 @@ module.exports = {
                     {
                         loader: "file-loader",
                         options: {
-                            name: "[path][name].[ext]",
-                            outputPath: "images/",
+                            name: "./images/[name].[ext]",
                         },
                     },
-                ],
-            },
-            {
-                test: /\.(png|jpg|gif)$/,
-                use: [
                     {
                         loader: "url-loader",
                         options: {
+                            name: "./images/[name].[ext]",
                             limit: 10000,
                         },
                     },
@@ -80,6 +92,10 @@ module.exports = {
     resolveLoader: { // rules for loading loaders
         modules: ["node_modules"],
         extensions: [".js"],
+    },
+
+    devServer: {
+        hot: true,
     },
 };
 

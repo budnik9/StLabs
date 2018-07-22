@@ -1,4 +1,4 @@
-const SPIN_OPTIONS = {
+export const SPIN_OPTIONS = {
     lines: 11, // The number of lines to draw
     length: 8, // The length of each line
     width: 19, // The line thickness
@@ -17,8 +17,4 @@ const SPIN_OPTIONS = {
     left: "50%", // Left position relative to parent
     shadow: "0 0 1px transparent", // Box-shadow for the lines
     position: "absolute", // Element positioning
-};
-
-export default {
-    SPIN_OPTIONS,
 };

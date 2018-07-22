@@ -7,11 +7,7 @@ const dateOptions = Object.freeze({
 });
 
 function render(parentElement = document.querySelector(".options-container")) {
-    const date = DOM.createDomElement(
-        "span",
-        "date",
-        new Date().toLocaleDateString("en-US", dateOptions),
-    );
+    const date = DOM.createDomElement("span", "date", new Date().toLocaleDateString("en-US", dateOptions));
 
     parentElement.appendChild(date);
 

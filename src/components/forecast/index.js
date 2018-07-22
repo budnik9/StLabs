@@ -2,9 +2,9 @@ import DOM from "../../services/dom";
 import Spinner from "../spinner";
 
 class Forecast {
-    constructor(weatherComponent, forecastChartComponent) {
+    constructor(weatherComponent, forecastChart) {
         this.weatherComponent = weatherComponent;
-        this.forecastChartComponent = forecastChartComponent;
+        this.forecastChart = forecastChart;
 
         this.spinner = new Spinner();
         this.spinner.spin();
@@ -17,7 +17,7 @@ class Forecast {
         );
 
         this.weatherComponent.render(forecastBlock);
-        this.forecastChartComponent.render(forecastBlock);
+        this.forecastChart.render(forecastBlock);
 
         this.spinner.stop();
 

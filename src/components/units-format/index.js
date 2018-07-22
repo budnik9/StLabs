@@ -40,7 +40,7 @@ function handleClick(event) {
     event.preventDefault();
 
     const mainContent = document.querySelector(".main-content");
-    const unitsFormat = event.target.value;
+    const currentUnitsFormat = event.target.value;
 
     mainContent.innerHTML = "";
 
@@ -48,13 +48,13 @@ function handleClick(event) {
     const city = citiesStorage.getCurrentGeolocationCity();
 
     if (city) {
-        renderCurrentGeolocationForecast(mainContent, city, unitsFormat);
+        renderCurrentGeolocationForecast(mainContent, city, currentUnitsFormat);
     }
 
     if (citiesStorage.getFavoriteCities().length) {
         const cities = citiesStorage.getAllCities();
 
-        const temperaturesChart = new TemperaturesChart(cities, unitsFormat);
+        const temperaturesChart = new TemperaturesChart(cities, currentUnitsFormat);
         temperaturesChart.render(mainContent).then(() => {
             const deleteSection = new DeleteSection(
                 citiesStorage.getFavoriteCities(),

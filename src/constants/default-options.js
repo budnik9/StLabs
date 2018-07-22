@@ -1,5 +1,1 @@
-const CITY_NAME = "Minsk";
-
-export default {
-    CITY_NAME,
-};
+export const CITY_NAME = "Minsk";

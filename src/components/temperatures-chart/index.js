@@ -1,16 +1,20 @@
+import toastr from "toastr";
 import Highcharts from "highcharts";
 import Exporting from "highcharts/modules/exporting";
+import { TOASTR_OPTIONS } from "../../constants/toastr-options";
 import DOM from "../../services/dom";
 import openWeatherMapAPI from "../../services/open-weather-map-api";
 import UnitsFormatConstants from "../../constants/units-format";
-import ChartOptions from "../../constants/chart-options";
+import { DATE_OPTIONS } from "../../constants/chart-options";
 import Spinner from "../spinner";
+
+toastr.options = TOASTR_OPTIONS;
 
 Exporting(Highcharts);
 
 class TemperaturesChart {
-    constructor(cities, unitsFormat = UnitsFormatConstants.METRIC) {
-        this.cities = cities;
+    constructor(cities, newCity, unitsFormat = UnitsFormatConstants.METRIC) {
+        this.cities = newCity ? cities.concat(newCity) : cities;
         this.unitsFormat = unitsFormat;
 
         this.spinner = new Spinner();
@@ -21,6 +25,7 @@ class TemperaturesChart {
 
         return Promise.all(this.cities.map(city => openWeatherMapAPI.getForecastByCityName(city, this.unitsFormat)))
             .then(forecasts => forecasts.map((forecast) => {
+
                 const temperatures = forecast.data.list.slice(0, 10).map(item => Math.round(item.main.temp * 10) / 10);
                 const city = forecast.data.city.name;
 
@@ -32,7 +37,14 @@ class TemperaturesChart {
                     },
                 };
             }))
-            .catch(err => console.log(err));
+            .catch(() => {
+                setTimeout(() => { 
+                    toastr.warning("You can't get weather forecast for this city\nCheck the entered data");
+
+                }, 10);
+
+                window.location.href = "/public/index.html";
+            });
     }
 
     async getTimeForForecastValues() {
@@ -48,7 +60,7 @@ class TemperaturesChart {
 
             const date = new Date(year, month, day, hour, minutes, seconds);
 
-            return date.toLocaleString("en-US", ChartOptions.DATE_OPTIONS);
+            return date.toLocaleString("en-US", DATE_OPTIONS);
         });
     }
 

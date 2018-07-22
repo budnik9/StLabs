@@ -1,5 +1,5 @@
 import { Spinner } from "spin.js";
-import spinnerOptions from "../../constants/spinner";
+import { SPIN_OPTIONS } from "../../constants/spinner";
 import DOM from "../../services/dom";
 
 class MySpinner {
@@ -8,7 +8,7 @@ class MySpinner {
         parentElement.appendChild(container);
 
         this.container = container;
-        this.spinner = new Spinner(spinnerOptions.SPIN_OPTIONS);
+        this.spinner = new Spinner(SPIN_OPTIONS);
     }
 
     spin() {

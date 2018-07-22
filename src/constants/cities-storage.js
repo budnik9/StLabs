@@ -1,6 +1,6 @@
-const FAVORITE_CITIES_KEY = "favoriteCities";
-const GEOLOCATION_CITY_KEY = "geolocationCity";
-const MAX_LENGTH = 5;
+export const FAVORITE_CITIES_KEY = "favoriteCities";
+export const GEOLOCATION_CITY_KEY = "geolocationCity";
+export const MAX_LENGTH = 5;
 
 export default {
     FAVORITE_CITIES_KEY,

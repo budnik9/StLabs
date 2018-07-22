@@ -1,6 +1,5 @@
 import Highcharts from "highcharts";
 import Exporting from "highcharts/modules/exporting";
-import configServer from "../../config/config-server";
 import ChartOptions from "../../constants/chart-options";
 import UnitsFormat from "../../constants/units-format";
 import DOM from "../../services/dom";
@@ -44,7 +43,7 @@ class ForecastChart {
             temperatureAxisData.push({
                 y: temperatureForecast[i],
                 marker: {
-                    symbol: `url(${configServer.ICONS_URL}${iconCodes[i]}.png)`,
+                    symbol: `url(${require(`../../../public/images/${iconCodes[i]}.png`)})`,
                 },
             });
         }
@@ -53,14 +52,12 @@ class ForecastChart {
     }
 
     getPressureForecast() {
-        return this.forecast.map(
-            item => Math.round(item.main.pressure * 10) / 10,
-        );
+        return this.forecast.map(item => Math.round(item.main.pressure * 10) / 10);
     }
 
     getPrecipitationForecast() {
         return this.forecast.map(
-            item => (item.rain ? Math.round(item.rain["3h"] * 10) / 10 : 0),
+            item => (item.rain ? (Math.round(item.rain["3h"] * 10) / 10) : 0),
         );
     }
 

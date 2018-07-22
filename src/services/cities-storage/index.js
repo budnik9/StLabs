@@ -1,14 +1,14 @@
-import storageConstants from "../../constants/cities-storage";
+import { MAX_LENGTH, FAVORITE_CITIES_KEY, GEOLOCATION_CITY_KEY } from "../../constants/cities-storage";
 
 class CitiesStorage {
     constructor() {
-        this.favoriteCities = JSON.parse(localStorage.getItem(storageConstants.FAVORITE_CITIES_KEY)) || [];
-        this.currentGeolocationCity = localStorage.getItem(storageConstants.GEOLOCATION_CITY_KEY);
+        this.favoriteCities = JSON.parse(localStorage.getItem(FAVORITE_CITIES_KEY)) || [];
+        this.currentGeolocationCity = localStorage.getItem(GEOLOCATION_CITY_KEY);
     }
 
     setCurrentGeolocationCity(city) {
         try {
-            localStorage.setItem(storageConstants.GEOLOCATION_CITY_KEY, city);
+            localStorage.setItem(GEOLOCATION_CITY_KEY, city);
             this.currentGeolocationCity = city;
         } catch (e) {
             console.log(e.message);
@@ -19,17 +19,21 @@ class CitiesStorage {
         return this.currentGeolocationCity || "";
     }
 
+    hasCurrentGeolocationCity() {
+        return !!this.currentGeolocationCity;
+    }
+
     static getMaxLength() {
-        return storageConstants.MAX_LENGTH;
+        return MAX_LENGTH;
     }
 
     getLength() {
-        return this.currentGeolocationCity ? this.favoriteCities.length + 1 : this.favoriteCities.length;
+        return this.hasCurrentGeolocationCity() ? this.favoriteCities.length + 1 : this.favoriteCities.length;
     }
 
     getAllCities() {
-        if (this.currentGeolocationCity) {
-            return [].concat(localStorage.getItem(storageConstants.GEOLOCATION_CITY_KEY), this.favoriteCities);
+        if (this.hasCurrentGeolocationCity()) {
+            return [].concat(localStorage.getItem(GEOLOCATION_CITY_KEY), this.favoriteCities);
         }
 
         return this.getFavoriteCities();
@@ -42,7 +46,7 @@ class CitiesStorage {
     addCity(city) {
         this.favoriteCities.push(city);
 
-        localStorage.setItem(storageConstants.FAVORITE_CITIES_KEY, JSON.stringify(this.favoriteCities));
+        localStorage.setItem(FAVORITE_CITIES_KEY, JSON.stringify(this.favoriteCities));
 
         return this.favoriteCities;
     }
@@ -56,7 +60,7 @@ class CitiesStorage {
 
         this.favoriteCities.splice(index, 1);
 
-        localStorage.setItem(storageConstants.FAVORITE_CITIES_KEY, JSON.stringify(this.favoriteCities));
+        localStorage.setItem(FAVORITE_CITIES_KEY, JSON.stringify(this.favoriteCities));
     }
 }
 

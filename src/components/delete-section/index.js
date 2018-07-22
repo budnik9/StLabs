@@ -2,20 +2,21 @@ import DOM from "../../services/dom";
 import CurrentUnitsFormat from "../units-format/current-units-format";
 import CitiesStorage from "../../services/cities-storage";
 import TemperaturesChart from "../temperatures-chart";
+import deleteIcon from "../../../public/images/delete-icon.png";
 
 class DeleteSection {
-    constructor(itemsText) {
-        this.itemsText = itemsText;
+    constructor(textItems) {
+        this.textItems = textItems;
     }
 
     handleClick(event) {
         event.preventDefault();
 
-        const [text, icon] = this.children;
+        const [textItem, icon] = this.children;
 
         if (event.target === icon) {
             const citiesStorage = new CitiesStorage();
-            const city = text.textContent;
+            const city = textItem.textContent;
 
             citiesStorage.removeCityFromFavorites(city);
 
@@ -31,12 +32,12 @@ class DeleteSection {
 
         const fragment = new DocumentFragment();
 
-        this.itemsText.forEach((itemText) => {
+        this.textItems.forEach((textItem) => {
             const item = DOM.createDomElement("div", "delete-section__item");
-            const text = DOM.createDomElement("span", "delete-section__text", itemText);
+            const text = DOM.createDomElement("span", "delete-section__text", textItem);
             const icon = DOM.createDomElement("img", "delete-section__icon");
 
-            icon.setAttribute("src", "https://api.icons8.com/download/4f06af3f885810b1e70dcfb158a672d42cebee11/Color/PNG/512/Editing/delete-512.png");
+            icon.setAttribute("src", `${deleteIcon}`);
             icon.setAttribute("alt", "press to delete");
 
             item.appendChild(text);
@@ -63,9 +64,9 @@ function replaceTemperaturesChart(citiesStorage, unitsFormat) {
     mainContent.removeChild(deleteSection);
     mainContent.removeChild(temperaturesChart);
 
-    if ((citiesStorage.getLength() > 1 && citiesStorage.getCurrentGeolocationCity())
-        || (citiesStorage.getLength() >= 1 && !citiesStorage.getCurrentGeolocationCity())) {
-            
+    if ((citiesStorage.getLength() > 1 && citiesStorage.hasCurrentGeolocationCity())
+        || (citiesStorage.getLength() >= 1 && !citiesStorage.hasCurrentGeolocationCity())) {
+
         const cities = citiesStorage.getAllCities();
         const newTemperaturesChart = new TemperaturesChart(cities, unitsFormat);
 
@@ -78,8 +79,8 @@ function replaceTemperaturesChart(citiesStorage, unitsFormat) {
 function addNewDeleteSection(citiesStorage) {
     const mainContent = document.querySelector(".main-content");
 
-    if ((citiesStorage.getLength() > 1 && citiesStorage.getCurrentGeolocationCity())
-        || (citiesStorage.getLength() >= 1 && !citiesStorage.getCurrentGeolocationCity())) {
+    if ((citiesStorage.getLength() > 1 && citiesStorage.hasCurrentGeolocationCity())
+        || (citiesStorage.getLength() >= 1 && !citiesStorage.hasCurrentGeolocationCity())) {
 
         const newDeleteSection = new DeleteSection(citiesStorage.getFavoriteCities());
 

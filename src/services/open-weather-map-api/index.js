@@ -1,10 +1,10 @@
 import axios from "axios";
 import configServer from "../../config/config-server";
 import unitsFormat from "../../constants/units-format";
-import DefaultOptions from "../../constants/default-options";
+import { CITY_NAME } from "../../constants/default-options";
 
 const openWeatherMapAPI = {
-    getForecastByCityName(cityName = DefaultOptions.CITY_NAME, units) {
+    getForecastByCityName(cityName = CITY_NAME, units) {
         const unitsForm = units === unitsFormat.STANDARD ? "" : `&units=${units}`;
 
         return axios.get(`${configServer.URL}forecast?q=${cityName}&APPID=${configServer.KEY}${unitsForm}`);
@@ -14,7 +14,7 @@ const openWeatherMapAPI = {
 
         return axios.get(`${configServer.URL}forecast?lat=${lat}&lon=${lon}&APPID=${configServer.KEY}${unitsForm}`);
     },
-    getWeatherByCityName(cityName = DefaultOptions.CITY_NAME, units) {
+    getWeatherByCityName(cityName = CITY_NAME, units) {
         const unitsForm = units === unitsFormat.STANDARD ? "" : `&units=${units}`;
 
         return axios.get(`${configServer.URL}weather?q=${cityName}&APPID=${configServer.KEY}${unitsForm}`);
