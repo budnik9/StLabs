@@ -20,21 +20,28 @@ function replaceTemperaturesChart(citiesStorage, newCity, unitsFormat) {
 
     const cities = citiesStorage.getAllCities();
 
+    const temperaturesChart = mainContent.querySelector(".temperatures-chart");
+    const deleteSection = document.querySelector(".delete-section");
+
     if (citiesStorage.getLength() >= 1) {
-        const temperaturesChart = mainContent.querySelector(".temperatures-chart");
-        const deleteSection = document.querySelector(".delete-section");
 
         if (deleteSection) mainContent.removeChild(deleteSection);
         if (temperaturesChart) mainContent.removeChild(temperaturesChart);
     }
 
-    const newTemperaturesChart = new TemperaturesChart(cities, newCity, unitsFormat);
+    const newTemperaturesChart = new TemperaturesChart(cities.concat(newCity), unitsFormat);
 
     newTemperaturesChart.render(mainContent)
         .then(() => {
             citiesStorage.addCity(newCity);
 
             addDeleteSection(mainContent, citiesStorage);
+        })
+        .catch(() => {
+            toastr.warning("We can't get weather forecast for this city. Please, check entered data");
+
+            mainContent.appendChild(temperaturesChart);
+            mainContent.appendChild(deleteSection);
         });
 }
 
@@ -54,7 +61,9 @@ function handleClick(event) {
     }
 
     const input = document.querySelector(".search-form__input");
-    const correctCityName = input.value[0].toUpperCase() + input.value.slice(1);
+    
+    let correctCityName = input.value[0].toUpperCase() + input.value.slice(1);
+    correctCityName = correctCityName.trim();
 
     if (!isValid(correctCityName) || citiesStorage.includes(correctCityName)) {
         input.value = "";
