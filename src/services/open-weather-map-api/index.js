@@ -1,5 +1,5 @@
 import axios from "axios";
-import configServer from "../../config/config-server";
+import configServer from "../../config/config-open-weather-map";
 import unitsFormat from "../../constants/units-format";
 import { CITY_NAME } from "../../constants/default-options";
 

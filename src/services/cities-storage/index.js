@@ -1,8 +1,9 @@
-import { MAX_LENGTH, FAVORITE_CITIES_KEY, GEOLOCATION_CITY_KEY } from "../../constants/cities-storage";
+import { MAX_LENGTH, GEOLOCATION_CITY_KEY } from "../../constants/cities-storage";
+import ServerAPI from "../my-server-api";
 
 class CitiesStorage {
     constructor() {
-        this.favoriteCities = JSON.parse(localStorage.getItem(FAVORITE_CITIES_KEY)) || [];
+        this.favoriteCities = ServerAPI.getFavoriteCities().then(cities => cities);
         this.currentGeolocationCity = localStorage.getItem(GEOLOCATION_CITY_KEY);
     }
 
@@ -44,11 +45,18 @@ class CitiesStorage {
     }
 
     addCity(city) {
-        this.favoriteCities.push(city);
 
-        localStorage.setItem(FAVORITE_CITIES_KEY, JSON.stringify(this.favoriteCities));
+        return ServerAPI.addCityToFavorites(city)
+            .then(() => {
+                this.favoriteCities.push(city);
+                
+                return this.favoriteCities;
+            })
+            .catch((err) => {
+                console.log(err);
 
-        return this.favoriteCities;
+                return null;
+            });
     }
 
     includes(city) {
@@ -56,11 +64,18 @@ class CitiesStorage {
     }
 
     removeCityFromFavorites(city) {
-        const index = this.favoriteCities.indexOf(city);
 
-        this.favoriteCities.splice(index, 1);
+        return ServerAPI.removeCityFromFavorites(city)
+            .then(() => {
+                const index = this.favoriteCities.indexOf(city);
+                this.favoriteCities.splice(index, 1);
 
-        localStorage.setItem(FAVORITE_CITIES_KEY, JSON.stringify(this.favoriteCities));
+                return true;
+            })
+            .catch((err) => {
+                console.log(err);
+                return false;
+            });
     }
 }
 
