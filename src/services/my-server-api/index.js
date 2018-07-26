@@ -11,7 +11,7 @@ const ServerAPI = {
     },
 
     removeCityFromFavorites(city) {
-        return axios.delete(`${configServer.URL}/favorites/`, { city });
+        return axios.delete(`${configServer.URL}/favorites/`, { data: { city } });
     },
 };
 

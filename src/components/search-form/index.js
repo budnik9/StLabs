@@ -6,6 +6,8 @@ import CitiesStorage from "../../services/cities-storage";
 import { REG_EXP_CITY_NAME } from "../../constants/reg-exp";
 import TemperaturesChart from "../temperatures-chart";
 import DeleteSection from "../delete-section";
+import statusCodes from "../../constants/http-status-codes";
+import { ServerAPI } from "../../services";
 
 toastr.options = TOASTR_OPTIONS;
 
@@ -32,10 +34,12 @@ function replaceTemperaturesChart(citiesStorage, newCity, unitsFormat) {
     const newTemperaturesChart = new TemperaturesChart(cities.concat(newCity), unitsFormat);
 
     newTemperaturesChart.render(mainContent)
-        .then(() => {
-            citiesStorage.addCity(newCity);
+        .then(async () => {
+            const favoriteCities = await citiesStorage.addCity(newCity);
 
-            addDeleteSection(mainContent, citiesStorage);
+            if (favoriteCities) {
+                addDeleteSection(mainContent, citiesStorage);
+            }
         })
         .catch(() => {
             toastr.warning("We can't get weather forecast for this city. Please, check entered data");
@@ -52,31 +56,44 @@ function isValid(value) {
 function handleClick(event) {
     event.preventDefault();
 
-    const citiesStorage = new CitiesStorage();
+    ServerAPI.getFavoriteCities()
+        .then((response) => {
+            const { data: favoriteCities, message } = response.data;
 
-    if (citiesStorage.getLength() >= CitiesStorage.getMaxLength()) {
-        toastr.info("You can't add more than 5 forecasts to page!");
+            if (response.status !== statusCodes.OK) {
+                toastr.error(message);
+            }
+            
+            const citiesStorage = new CitiesStorage(favoriteCities);
+            const input = document.querySelector(".search-form__input");
 
-        return;
-    }
+            if (citiesStorage.getLength() >= CitiesStorage.getMaxLength()) {
+                toastr.info("You can't add more than 5 forecasts to page!");
+                input.value = "";
 
-    const input = document.querySelector(".search-form__input");
-    
-    let correctCityName = input.value[0].toUpperCase() + input.value.slice(1);
-    correctCityName = correctCityName.trim();
+                return;
+            }
 
-    if (!isValid(correctCityName) || citiesStorage.includes(correctCityName)) {
-        input.value = "";
-        toastr.warning("You entered an incorrect city name!");
+            let correctCityName = input.value[0].toUpperCase() + input.value.slice(1);
+            correctCityName = correctCityName.trim();
 
-        return;
-    }
+            if (!isValid(correctCityName) || citiesStorage.includes(correctCityName)) {
+                input.value = "";
+                toastr.warning("You entered an incorrect city name!");
 
-    const unitsFormat = CurrentUnitsFormat.getCurrentUnitsFormat();
+                return;
+            }
 
-    replaceTemperaturesChart(citiesStorage, correctCityName, unitsFormat);
+            const unitsFormat = CurrentUnitsFormat.getCurrentUnitsFormat();
 
-    input.value = "";
+            replaceTemperaturesChart(citiesStorage, correctCityName, unitsFormat);
+
+            input.value = "";
+        })
+        .catch((error) => {
+            console.log(error);
+            document.querySelector(".search-form__input").value = "";
+        });
 }
 
 function template() {
@@ -89,7 +106,7 @@ function render(parentElement = document.querySelector(".options-container")) {
 
     form.innerHTML = template();
     form.querySelector(".search-form__button").addEventListener("click", handleClick);
-    
+
     parentElement.appendChild(form);
 
     return form;

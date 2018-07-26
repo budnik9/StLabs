@@ -1,8 +1,12 @@
-import DOM from "../../services/dom";
+import toastr from "toastr";
+import { TOASTR_OPTIONS } from "../../constants/toastr-options";
 import CurrentUnitsFormat from "../units-format/current-units-format";
-import CitiesStorage from "../../services/cities-storage";
+import { CitiesStorage, DOM, ServerAPI } from "../../services";
 import TemperaturesChart from "../temperatures-chart";
 import deleteIcon from "../../../public/images/delete-icon.png";
+import statusCodes from "../../constants/http-status-codes";
+
+toastr.options = TOASTR_OPTIONS;
 
 class DeleteSection {
     constructor(textItems) {
@@ -15,15 +19,27 @@ class DeleteSection {
         const [textItem, icon] = this.children;
 
         if (event.target === icon) {
-            const citiesStorage = new CitiesStorage();
-            const city = textItem.textContent;
+            ServerAPI.getFavoriteCities()
+                .then(async (response) => {
+                    const { data: favoriteCities, message } = response.data;
 
-            citiesStorage.removeCityFromFavorites(city);
+                    if (response.status !== statusCodes.OK) {
+                        toastr.error(message);
+                    }
 
-            const unitsFormat = CurrentUnitsFormat.getCurrentUnitsFormat();
+                    const citiesStorage = new CitiesStorage(favoriteCities);
+                    const city = textItem.textContent;
 
-            replaceTemperaturesChart(citiesStorage, unitsFormat)
-                .then(() => addNewDeleteSection(citiesStorage));
+                    const result = await citiesStorage.removeCityFromFavorites(city);
+
+                    if (result) {
+                        const unitsFormat = CurrentUnitsFormat.getCurrentUnitsFormat();
+
+                        replaceTemperaturesChart(citiesStorage, unitsFormat)
+                            .then(() => addNewDeleteSection(citiesStorage));
+                    }
+                })
+                .catch(error => console.log(error));
         }
     }
 
@@ -57,6 +73,7 @@ class DeleteSection {
 
 
 function replaceTemperaturesChart(citiesStorage, unitsFormat) {
+
     const mainContent = document.querySelector(".main-content");
     const temperaturesChart = mainContent.querySelector(".temperatures-chart");
     const deleteSection = mainContent.querySelector(".delete-section");

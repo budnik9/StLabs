@@ -1,11 +1,21 @@
+import toastr from "toastr";
+import { TOASTR_OPTIONS } from "../../constants/toastr-options";
 import Weather from "../weather";
-import openWeatherMapAPI from "../../services/open-weather-map-api";
 import Forecast from "../forecast";
 import ForecastChart from "../forecast-chart";
 import TemperaturesChart from "../temperatures-chart";
-import CitiesStorage from "../../services/cities-storage";
-import DOM from "../../services/dom";
+
+import {
+    CitiesStorage,
+    DOM,
+    OpenWeatherMapApi,
+    ServerAPI,
+} from "../../services";
+
 import DeleteSection from "../delete-section";
+import statusCodes from "../../constants/http-status-codes";
+
+toastr.options = TOASTR_OPTIONS;
 
 function toggleActiveButton(targetEvent) {
     const buttons = document.querySelectorAll(".units-format button");
@@ -20,11 +30,11 @@ function toggleActiveButton(targetEvent) {
 }
 
 async function renderCurrentGeolocationForecast(parentElement, city, unitsFormat) {
-    const weatherResponse = await openWeatherMapAPI.getWeatherByCityName(
+    const weatherResponse = await OpenWeatherMapApi.getWeatherByCityName(
         city,
         unitsFormat,
     );
-    const forecastResponse = await openWeatherMapAPI.getForecastByCityName(
+    const forecastResponse = await OpenWeatherMapApi.getForecastByCityName(
         city,
         unitsFormat,
     );
@@ -44,27 +54,37 @@ function handleClick(event) {
 
     mainContent.innerHTML = "";
 
-    const citiesStorage = new CitiesStorage();
-    const city = citiesStorage.getCurrentGeolocationCity();
+    ServerAPI.getFavoriteCities()
+        .then((response) => {
+            const { data: favoriteCities, message } = response.data;
 
-    if (city) {
-        renderCurrentGeolocationForecast(mainContent, city, currentUnitsFormat);
-    }
+            if (response.status !== statusCodes.OK) {
+                toastr.error(message);
+            }
 
-    if (citiesStorage.getFavoriteCities().length) {
-        const cities = citiesStorage.getAllCities();
+            const citiesStorage = new CitiesStorage(favoriteCities);
+            const city = citiesStorage.getCurrentGeolocationCity();
 
-        const temperaturesChart = new TemperaturesChart(cities, currentUnitsFormat);
-        temperaturesChart.render(mainContent).then(() => {
-            const deleteSection = new DeleteSection(
-                citiesStorage.getFavoriteCities(),
-            );
+            if (city) {
+                renderCurrentGeolocationForecast(mainContent, city, currentUnitsFormat);
+            }
 
-            deleteSection.render(mainContent);
-        });
-    }
+            if (citiesStorage.getFavoriteCities().length) {
+                const cities = citiesStorage.getAllCities();
 
-    toggleActiveButton(event.target);
+                const temperaturesChart = new TemperaturesChart(cities, currentUnitsFormat);
+                temperaturesChart.render(mainContent).then(() => {
+                    const deleteSection = new DeleteSection(
+                        citiesStorage.getFavoriteCities(),
+                    );
+
+                    deleteSection.render(mainContent);
+                });
+            }
+
+            toggleActiveButton(event.target);
+        })
+        .catch(error => console.log(error));
 }
 
 function template() {

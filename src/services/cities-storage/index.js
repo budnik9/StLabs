@@ -2,8 +2,8 @@ import { MAX_LENGTH, GEOLOCATION_CITY_KEY } from "../../constants/cities-storage
 import ServerAPI from "../my-server-api";
 
 class CitiesStorage {
-    constructor() {
-        this.favoriteCities = ServerAPI.getFavoriteCities().then(cities => cities);
+    constructor(favoriteCities = []) {
+        this.favoriteCities = favoriteCities;
         this.currentGeolocationCity = localStorage.getItem(GEOLOCATION_CITY_KEY);
     }
 
@@ -44,12 +44,12 @@ class CitiesStorage {
         return this.favoriteCities;
     }
 
-    addCity(city) {
+    async addCity(city) {
 
         return ServerAPI.addCityToFavorites(city)
             .then(() => {
                 this.favoriteCities.push(city);
-                
+
                 return this.favoriteCities;
             })
             .catch((err) => {
@@ -63,11 +63,12 @@ class CitiesStorage {
         return this.getAllCities().includes(city);
     }
 
-    removeCityFromFavorites(city) {
+    async removeCityFromFavorites(city) {
 
         return ServerAPI.removeCityFromFavorites(city)
             .then(() => {
                 const index = this.favoriteCities.indexOf(city);
+
                 this.favoriteCities.splice(index, 1);
 
                 return true;
